@@ -1,10 +1,14 @@
 import { google } from 'googleapis';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-async function fetchCalendarEvents() {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+async function fetchCalendarEvents(startTime, endTime) {
   try {
-    // 1. Load token.json
+    
     const TOKEN_PATH = path.join(process.cwd(), 'GCal_token.json');
     if (!fs.existsSync(TOKEN_PATH)) {
       console.error('token.json not found on server.');
@@ -12,28 +16,23 @@ async function fetchCalendarEvents() {
     }
     const tokens = JSON.parse(fs.readFileSync(TOKEN_PATH, 'utf8'));
 
-    // 2. Create OAuth2 client
     const oauth2Client = new google.auth.OAuth2(
       process.env.GOOGLE_CLIENT_ID,
       process.env.GOOGLE_CLIENT_SECRET,
       process.env.GOOGLE_REDIRECT_URI
     );
 
-    // 3. Set the credentials from token.json
     oauth2Client.setCredentials(tokens);
 
-    // 4. Create the Gmail client
     const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
-    // 5. Compute time for "today"
     const todayStart = new Date(new Date().setHours(0, 0, 0, 0)).toISOString();
     const todayEnd = new Date(new Date().setHours(23, 59, 59, 999)).toISOString();
 
-    // 6. Fetch events for today
     const listRes = await calendar.events.list({
       calendarId: 'primary',
-      timeMin: todayStart,
-      timeMax: todayEnd,
+      timeMin: startTime,
+      timeMax: endTime,
       maxResults: 10,
       singleEvents: true,
       orderBy: 'startTime',
@@ -53,8 +52,7 @@ async function fetchCalendarEvents() {
       summary: event.summary,
     }));
 
-    // 8. Save the event data to a file
-    const OUTPUT_PATH = path.join(process.cwd(), 'calendarEvents.json');
+    const OUTPUT_PATH = path.join(__dirname, 'calendarEvents.json');
     fs.writeFileSync(OUTPUT_PATH, JSON.stringify(eventData, null, 2));
 
     console.log('Fetched events saved to calendarEvents.json');
@@ -64,5 +62,7 @@ async function fetchCalendarEvents() {
   }
 }
 
-// Run the function
-fetchCalendarEvents();
+const todayStart = new Date(new Date().setHours(0, 0, 0, 0)).toISOString();
+const todayEnd = new Date(new Date().setHours(23, 59, 59, 999)).toISOString();
+
+fetchCalendarEvents(todayStart, todayEnd);

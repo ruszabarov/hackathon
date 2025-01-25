@@ -6,7 +6,7 @@ import fs from 'fs';
 const app = express();
 const port = 3000;
 
-const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
+const SCOPES = ['https://www.googleapis.com/auth/calendar'];
 const REDIRECT_URI = 'http://localhost:3000/api/auth/callback'; // Make sure this matches
 const OAUTH2_CLIENT_ID = '971217795337-11n4d03dtr0g322te4qc6sc7hk50s3ns.apps.googleusercontent.com'; 
 const OAUTH2_CLIENT_SECRET = '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';
