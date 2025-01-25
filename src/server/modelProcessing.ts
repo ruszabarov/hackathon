@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
 import {z} from 'zod';
+import {parse} from 'date-fns';
 
 
 console.log(process.env.OPENAI_API_KEY)
@@ -40,7 +41,7 @@ const replyEmailSchema = z.object({
 })
 
 
-interface CalendarEvent {
+interface CalendarEventPayload {
   summary?: string;
   description?: string;
   location?: string;
@@ -51,6 +52,36 @@ interface CalendarEvent {
     dateTime: string;
   };
   attendees?: { email: string }[];
+}
+
+function fetchTimeFromEmail(email: EmailPayload) {
+  try {
+    // Regex pattern to match potential date and time phrases in the email content
+    const dateRegex = /\b(?:on\s+)?(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}|\b\w+\s\d{1,2},?\s?\d{4}?)\b/i;
+    const timeRegex = /\b(?:at\s+)?(\d{1,2}[:\.]\d{2}(?:\s?[apAP][mM])?)\b/;
+
+    // Extract date and time strings from email content
+    const dateMatch = email.content.match(dateRegex);
+    const timeMatch = email.content.match(timeRegex);
+
+    if (dateMatch && dateMatch[1]) {
+      const dateString = dateMatch[1];
+      const timeString = timeMatch ? timeMatch[1] : '09:00 AM'; // Default to 9 AM if no time is specified
+
+      // Combine date and time, then parse it into a Date object
+      const combinedDateTime = `${dateString} ${timeString}`;
+      const parsedDate = parse(combinedDateTime, 'MM/dd/yyyy hh:mm a', new Date());
+
+      // Format the parsed date to Google API's required format
+      const googleAPIDate = parsedDate.toISOString();
+      return googleAPIDate;
+    }
+
+    throw new Error('No valid date or time found in the email content.');
+  } catch (error) {
+    console.error('Error fetching time from email:');
+    return null;
+  }
 }
 
 // takes in the email json and a query and return the suggested 
@@ -97,13 +128,11 @@ export async function replyWithAI (email: EmailPayload, query: string): Promise<
     console.error("Error processing email:", err.message);
     throw err;
   }
-
-
 }
 
-export async function createCalendarEventFromEmail(email: EmailPayload): Promise<CalendarEvent> {
+export async function createCalendarEventFromEmail(email: EmailPayload): Promise<CalendarEventPayload> {
 
-  const calendarEvent: CalendarEvent = {};
+  const calendarEvent: CalendarEventPayload = {};
 
   if (email.title) {
     calendarEvent.summary = `Meeting Request: ${email.title}`;
@@ -208,10 +237,12 @@ export async function processEmail(
   const query = "Please provide a professional reply confirming the next meeting time.";
 
   try {
-    const responseReplyWithAI = await replyWithAI(sampleEmail, query);
-    const processEmailAI = await processEmail(sampleEmail)
-    console.log("Generated Reply with AI:", responseReplyWithAI);
-    console.log("Processed Email with AI", processEmailAI);
+    //const responseReplyWithAI = await replyWithAI(sampleEmail, query);
+    //const processEmailAI = await processEmail(sampleEmail)
+    //console.log("Generated Reply with AI:", responseReplyWithAI);
+    //console.log("Processed Email with AI", processEmailAI);
+    const date = fetchTimeFromEmail(sampleEmail)
+    console.log("time", date)
   } catch (error) {
     console.error("Test Error:", error);
   }
