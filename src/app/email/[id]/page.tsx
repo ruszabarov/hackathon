@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/await-thenable */
 import { fetchEmail } from "../../../server/queries";
 import { EmailSummary } from "../../components/EmailSummary";
 
 export default async function EmailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
   const email = await fetchEmail(parseInt(id));
