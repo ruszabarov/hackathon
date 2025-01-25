@@ -4,7 +4,7 @@ import open from 'open';
 import fs from 'fs';
 
 const app = express();
-const port = 3000;
+const port = 3001;
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar'];
 const REDIRECT_URI = 'http://localhost:3000/api/auth/callback'; // Make sure this matches
@@ -18,7 +18,7 @@ const oauth2Client = new google.auth.OAuth2(
   REDIRECT_URI
 );
 
-// Step 1: Start OAuth2 flow
+
 app.get('/auth', (req, res) => {
   const authUrl = oauth2Client.generateAuthUrl({
     access_type: 'offline', // Offline access gives a refresh token

@@ -5,7 +5,6 @@ import path from 'path';
 //for schedule events from a json
 //const EVENTS_FILE_PATH = path.join(process.cwd(), 'schedule.json');
 
-//TODO: connect to json file 
 async function scheduleEvent() {
   try {
     const TOKEN_PATH = path.join(process.cwd(), 'GCal_token.json');
@@ -78,4 +77,4 @@ async function scheduleEvent() {
 }
 
 // Call the function (for testing purposes)
-scheduleEvent();
+void scheduleEvent();
