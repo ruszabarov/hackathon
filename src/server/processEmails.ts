@@ -2,22 +2,14 @@ import { google } from 'googleapis';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { processEmail, ProcessedEmail } from './modelProcessing'; // Update this path as needed
-
-interface EmailData {
-  id: string;
-  title: string;
-  sender: string;
-  content: string;
-  timestamp: string;
-}
+import { EmailPayload, processEmail, ProcessedEmailPayload } from './modelProcessing'; 
 
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 
-export async function fetchGmails(): Promise<EmailData[]> {
+export async function fetchGmails(): Promise<EmailPayload[]> {
   try {
     // 1. Load token.json
     const TOKEN_PATH = path.join(__dirname, '..', '..', 'token.json');
@@ -52,7 +44,7 @@ export async function fetchGmails(): Promise<EmailData[]> {
       return [];
     }
 
-    const emailData: EmailData[] = [];
+    const emailData: EmailPayload[] = [];
 
     for (const msg of messages) {
       if (!msg.id) continue;
@@ -81,18 +73,25 @@ export async function fetchGmails(): Promise<EmailData[]> {
         : 'No Content';
 
       emailData.push({ id: msg.id, title, sender, content, timestamp });
+      await gmail.users.messages.modify({
+        userId: 'me',
+        id: msg.id,
+        requestBody: {
+          removeLabelIds: ['UNREAD'],
+        },
+      });
     }
 
     // Process emails
-    const processedEmails: ProcessedEmail[] = [];
-    for (const email of emailData) {
-      const processed = await processEmail(email);
-      processedEmails.push(processed);
-    }
+    // const processedEmails: ProcessedEmail[] = [];
+    // for (const email of emailData) {
+    //   const processed = await processEmail(email);
+    //   processedEmails.push(processed);
+    // }
 
-    const OUTPUT_PATH = path.join(process.cwd(), 'processed_emails.json');
-    fs.writeFileSync(OUTPUT_PATH, JSON.stringify(processedEmails, null, 2), 'utf8');
-    console.log('Processed emails have been saved to processed_emails.json');
+    // const OUTPUT_PATH = path.join(process.cwd(), 'processed_emails.json');
+    // fs.writeFileSync(OUTPUT_PATH, JSON.stringify(processedEmails, null, 2), 'utf8');
+    // console.log('Processed emails have been saved to processed_emails.json');
 
     return emailData;
   } catch (error) {
@@ -101,10 +100,27 @@ export async function fetchGmails(): Promise<EmailData[]> {
   }
 }
 
+export async function processFetchedGmails(emailData: EmailPayload[]): Promise<ProcessedEmailPayload[]>{
+  const processedEmails: ProcessedEmailPayload[] = [];
+  for (const email of emailData){
+    const processed = await processEmail(email)
+    processedEmails.push(processed);
+  }
+
+  const OUTPUT_PATH = path.join(process.cwd(), 'processed_emails.json');
+  fs.writeFileSync(OUTPUT_PATH, JSON.stringify(processedEmails, null, 2), 'utf8');
+  console.log('Processed emails have been saved to processed_emails.json');
+  return processedEmails
+
+}
+
+
 async function testFetchGmails() {
   try {
     const emails = await fetchGmails();
+    const processedEmails = await processFetchedGmails(emails)
     console.log('Fetched emails:', emails);
+    console.log('Processed emails', processedEmails)
   } catch (error) {
     console.error('Error testing fetchGmails:', error);
   }

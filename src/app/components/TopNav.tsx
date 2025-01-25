@@ -4,13 +4,13 @@ import { MailCheck, Sun, Moon, Laptop } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import { Button } from "../../components/ui/button";
+import { Button } from "@components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../../components/ui/dropdown-menu";
+} from "@components/ui/dropdown-menu";
 
 const TopNav = () => {
   const { setTheme } = useTheme();

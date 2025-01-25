@@ -9,17 +9,23 @@ const client = new OpenAI({
   apiKey: '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',
 });
 
-interface EmailPayload {
+export interface EmailPayload {
+  id: string;
   title: string;
   sender: string;
   content: string;
   timestamp: string;
 }
 
-export interface ProcessedEmail {
+export interface ProcessedEmailPayload {
   summary: string;
   priority: number;  
   intention: "Yes" | "No";
+}
+
+interface replyEmailPayload { 
+  title: string;
+  reply: string;
 }
 
 const ProcessedEmailSchema = z.object({
@@ -27,6 +33,11 @@ const ProcessedEmailSchema = z.object({
   priority: z.number(),                
   intention: z.enum(["Yes", "No"]),    
 });
+
+const replyEmailSchema = z.object({
+  title: z.string(),
+  reply: z.string(),
+})
 
 
 interface CalendarEvent {
@@ -42,7 +53,53 @@ interface CalendarEvent {
   attendees?: { email: string }[];
 }
 
+// takes in the email json and a query and return the suggested 
+export async function replyWithAI (email: EmailPayload, query: string): Promise<replyEmailPayload> {
+  try {
+    const systemMessage = {
+      role: "system" as const,
+      content: `
+        You are an AI assistant that drafts professional email replies. The email details will be provided as user content.
+        Craft a polite and clear response and appropriate title based on the query and the provided email context.
+      `,
+    };
 
+    const userMessage = {
+      role: "user" as const,
+      content: `
+        Here is the email information:
+        Title: ${email.title}
+        Sender: ${email.sender}
+        Content: ${email.content}
+        Timestamp: ${email.timestamp}
+      `,
+    };
+
+    const completion = await client.beta.chat.completions.parse({
+      model: "gpt-4o-mini", 
+      messages: [systemMessage, userMessage],
+
+      response_format: zodResponseFormat(
+        replyEmailSchema,
+        "reply_email_response"
+      ),
+    });
+
+    const parsedData = completion.choices[0]?.message?.parsed;
+    if (!parsedData) {
+      throw new Error("No parsed data returned by the model.");
+    }
+
+    return parsedData;
+
+
+  } catch (err: any) {
+    console.error("Error processing email:", err.message);
+    throw err;
+  }
+
+
+}
 
 export async function createCalendarEventFromEmail(email: EmailPayload): Promise<CalendarEvent> {
 
@@ -82,7 +139,7 @@ export async function createCalendarEventFromEmail(email: EmailPayload): Promise
 
 export async function processEmail(
   email: EmailPayload
-): Promise<ProcessedEmail> {
+): Promise<ProcessedEmailPayload> {
   try {
     // Our system instructions: model must return only JSON with specific keys.
     const systemMessage = {
@@ -116,7 +173,7 @@ export async function processEmail(
     };
 
     const completion = await client.beta.chat.completions.parse({
-      model: "gpt-4o", 
+      model: "gpt-4o-mini", 
       messages: [systemMessage, userMessage],
 
       response_format: zodResponseFormat(
@@ -136,3 +193,26 @@ export async function processEmail(
     throw err;
   }
 }
+
+
+
+(async () => {
+  const sampleEmail = {
+    "id": "1949bdd5489a3256",
+    "title": "Schedule Meeting Please",
+    "sender": "Khoa Luong <minhkhoaluong0128@gmail.com>",
+    "content": "I am Khoa. I demand a meeting with you on\r\n",
+    "timestamp": "2025-01-25T05:09:09.000Z"
+  };
+
+  const query = "Please provide a professional reply confirming the next meeting time.";
+
+  try {
+    const responseReplyWithAI = await replyWithAI(sampleEmail, query);
+    const processEmailAI = await processEmail(sampleEmail)
+    console.log("Generated Reply with AI:", responseReplyWithAI);
+    console.log("Processed Email with AI", processEmailAI);
+  } catch (error) {
+    console.error("Test Error:", error);
+  }
+})();

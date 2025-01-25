@@ -6,7 +6,7 @@ import {
   CardContent,
   CardTitle,
   CardDescription,
-} from "../../components/ui/card";
+} from "@components/ui/card";
 import { cn } from "../../lib/utils";
 import { useRouter } from "next/navigation";
 
