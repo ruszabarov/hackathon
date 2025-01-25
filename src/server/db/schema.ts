@@ -1,7 +1,6 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
-import { sql } from "drizzle-orm";
 import {
   index,
   integer,
@@ -31,5 +30,5 @@ export const emails = createTable(
   },
   (example) => ({
     priorityIndex: index("priority_idx").on(example.priority),
-  })
+  }),
 );
