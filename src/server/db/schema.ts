@@ -34,3 +34,21 @@ export const posts = createTable(
     nameIndex: index("name_idx").on(example.name),
   })
 );
+
+export const emails = createTable(
+  "emails",
+  {
+    emailId: integer("email_id").primaryKey().generatedByDefaultAsIdentity(),
+    sender: varchar("sender", { length: 256 }),
+    summary: varchar("summary", { length: 512 }),
+    priority: varchar("priority", { length: 10 }),
+    title: varchar("title", { length: 256 }),
+    time: timestamp("time", { withTimezone: true }),
+    originalContent: varchar("originalContent", { length: 512 })
+  },
+  (example) => ({
+    priorityIndex: index("priority_idx").on(example.priority),
+    priorityCheck: sql`CHECK (priority IN ('high', 'mid', 'low', 'none'))`,
+  })
+);
+

@@ -1,37 +1,67 @@
-import Link from "next/link";
+"use client";
+
+import { EmailSummaryCard, Priority } from "./components/EmailSummaryCard";
+
+const mockEmails = [
+  {
+    id: "1",
+    subject: "Q4 Financial Report Review",
+    content: "Please review the attached Q4 financial reports before tomorrow's meeting. Key metrics show positive growth.",
+    priority: Priority.High,
+    from: "finance@example.com",
+  },
+  {
+    id: "2",
+    subject: "Team Building Event",
+    content: "Join us for the annual team building event next Friday. Activities and lunch will be provided.",
+    priority: Priority.Low,
+    from: "hr@example.com",
+  },
+  {
+    id: "3",
+    subject: "New Project Kickoff",
+    content: "Exciting new project starting next week. Please prepare your schedules for the kickoff meeting.",
+    priority: Priority.Medium,
+    from: "project@example.com",
+  },
+  {
+    id: "4",
+    subject: "System Maintenance Notice",
+    content: "Scheduled maintenance will occur this weekend. Please save all work and log off by Friday 6 PM.",
+    priority: Priority.High,
+    from: "admin@example.com",
+  },
+  {
+    id: "5",
+    subject: "Office Supply Request",
+    content: "Monthly office supply order is due. Submit your requests by Wednesday.",
+    priority: Priority.None,
+    from: "admin@example.com",
+  },
+  {
+    id: "6",
+    subject: "Client Presentation Feedback",
+    content: "Great work on yesterday's client presentation. Some follow-up items attached for review.",
+    priority: Priority.Medium,
+    from: "sales@example.com",
+  },
+];
 
 export default function HomePage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-      <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-        <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-          Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-        </h1>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="https://create.t3.gg/en/usage/first-steps"
-            target="_blank"
-          >
-            <h3 className="text-2xl font-bold">First Steps →</h3>
-            <div className="text-lg">
-              Just the basics - Everything you need to know to set up your
-              database and authentication.
-            </div>
-          </Link>
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="https://create.t3.gg/en/introduction"
-            target="_blank"
-          >
-            <h3 className="text-2xl font-bold">Documentation →</h3>
-            <div className="text-lg">
-              Learn more about Create T3 App, the libraries it uses, and how to
-              deploy it.
-            </div>
-          </Link>
-        </div>
+    <div className="container mx-auto p-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {mockEmails.map((email) => (
+          <EmailSummaryCard
+            key={email.id}
+            id={email.id}
+            subject={email.subject}
+            content={email.content}
+            priority={email.priority}
+            from={email.from}
+          />
+        ))}
       </div>
-    </main>
+    </div>
   );
 }
