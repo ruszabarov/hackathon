@@ -24,13 +24,12 @@ export const emails = createTable(
     emailId: integer("email_id").primaryKey().generatedByDefaultAsIdentity(),
     sender: varchar("sender", { length: 256 }),
     summary: varchar("summary", { length: 512 }),
-    priority: varchar("priority", { length: 10 }),
+    priority: integer("priority"),
     title: varchar("title", { length: 256 }),
-    time: timestamp("email_time", { withTimezone: true }),
+    email_time: timestamp("email_time", { withTimezone: true }),
     originalContent: varchar("originalContent", { length: 512 }),
   },
   (example) => ({
     priorityIndex: index("priority_idx").on(example.priority),
-    priorityCheck: sql`CHECK (priority IN ('high', 'mid', 'low', 'none'))`,
-  }),
+  })
 );
