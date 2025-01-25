@@ -17,10 +17,26 @@ const TopNav = () => {
 
   return (
     <nav className="flex w-full items-center justify-between border-b border-zinc-700 p-4 text-xl font-semibold">
-      <Link href="/" className="flex items-center">
-        <MailCheck className="h-6 w-6" />
-        <span className="ml-2 text-xl font-bold">InboxGenius</span>
-      </Link>
+      <div className="flex items-center gap-10">
+        <Link href="/" className="flex items-center justify-center">
+          <MailCheck className="h-6 w-6" />
+          <span className="ml-2 text-xl font-bold leading-none">
+            InboxGenius
+          </span>
+        </Link>
+        <div className="flex items-center justify-center gap-4">
+          <Link href="/email" className="flex items-center">
+            <span className="text-sm font-normal leading-none text-zinc-600 dark:text-zinc-400">
+              Emails
+            </span>
+          </Link>
+          <Link href="/schedule" className="flex items-center">
+            <span className="text-sm font-normal leading-none text-zinc-600 dark:text-zinc-400">
+              Schedule
+            </span>
+          </Link>
+        </div>
+      </div>
       <div className="flex items-center gap-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
