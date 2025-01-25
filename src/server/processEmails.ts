@@ -146,3 +146,19 @@ async function testFetchGmails() {
 void (async () => {
   await testFetchGmails();
 })();
+
+
+// if (import.meta.url === new URL('', import.meta.url).href) {
+//   (async () => {
+    
+
+//     try {
+//       const emails = await fetchGmails();
+//       const processedEmails = await processFetchedGmails(emails);
+//       console.log("Fetched emails:", emails);
+//       console.log("Processed emails", processedEmails);
+//     } catch (error) {
+//       console.error("Test Error:", error);
+//     }
+//   })().catch(console.error);
+// }

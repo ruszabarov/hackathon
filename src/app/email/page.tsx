@@ -1,13 +1,20 @@
 import { fetchEmails } from "../../server/queries";
+import { revalidatePath } from "next/cache";
+import { fetchProcessAndStoreEmails} from "../../server/queries"
 import { EmailSummaryCard } from "../_components/EmailSummaryCard";
 import RefreshButton from "../_components/RefreshButton";
 
 export default async function Emails() {
+  async function refreshEmailsAction() {
+    "use server"; 
+    await fetchProcessAndStoreEmails();
+    revalidatePath("/emails");
+  }
   const emails = await fetchEmails();
   return (
     <div className="container mx-auto p-4">
       <div className="mb-4 flex items-center justify-start">
-        <RefreshButton />
+        <RefreshButton refreshAction={refreshEmailsAction} />
         <h2 className="text-l ml-4 font-semibold">
           Here are your latest emails, summarized and organized by priority
         </h2>

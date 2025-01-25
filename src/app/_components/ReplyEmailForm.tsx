@@ -16,7 +16,8 @@ import { Textarea } from "@components/ui/textarea";
 const formSchema = z.object({
   to: z.string().email({ message: "Please enter a valid email address" }),
   subject: z.string().min(1, { message: "Subject is required" }),
-  content: z.string().min(1, { message: "Message content is required" }),
+  originalContent: z.string().min(1, { message: "Message content is required" }),
+  aiPrompt: z.string().optional(),
 });
 
 interface ReplyEmailFormProps {
@@ -37,9 +38,49 @@ export function ReplyEmailForm({
       subject: defaultSubject.startsWith("Re:")
         ? defaultSubject
         : `Re: ${defaultSubject}`,
-      content: "",
+      originalContent: "",
     },
   });
+
+
+  const handleKeyPress = async (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+
+      const { to, subject, originalContent, aiPrompt } = form.getValues();
+
+      if (!aiPrompt) {
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/emails", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            action: "replyWithAI",
+            title: subject,
+            sender: to,
+            content: originalContent,
+            aiPrompt,
+          }),
+        });
+
+        const result = await response.json();
+        console.log(result)
+        if (result.success && result.reply) {
+          form.setValue("originalContent", result.reply);
+        } else {
+          console.error("Failed to generate AI reply:", result.error);
+        }
+      } catch (error) {
+        console.error("Error generating AI reply:", error);
+      } finally {
+      }
+    }
+  };
 
   return (
     <Form {...form}>
@@ -70,9 +111,29 @@ export function ReplyEmailForm({
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
-          name="content"
+          name="aiPrompt"
+          render={({ field }) => (
+            <FormItem className="mb-4">
+              <FormLabel>AI Prompt</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Generate with AI"
+                  className="w-full"
+                  {...field}
+                  onKeyDown={handleKeyPress}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="originalContent"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Message</FormLabel>
@@ -87,6 +148,8 @@ export function ReplyEmailForm({
             </FormItem>
           )}
         />
+
+        
         <div className="mt-6 flex justify-end space-x-2">
           <Button type="submit">Send Reply</Button>
         </div>

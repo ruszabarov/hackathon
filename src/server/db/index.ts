@@ -6,5 +6,5 @@ import * as schema from "./schema"
 
 config({ path: ".env" }); // or .env.local
 
-const sql = neon(process.env.POSTGRES_URL!);
+const sql = neon('postgres://neondb_owner:npg_sGfm3TSuRF0r@ep-mute-shadow-a5d76grn-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require');
 export const db = drizzle(sql, { schema });

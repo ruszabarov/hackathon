@@ -1,12 +1,12 @@
 [
   {
-    "summary": "Khoa Luong is requesting to schedule a meeting.",
+    "summary": "Khoa Luong is requesting a meeting.",
     "priority": 1,
     "intention": "Yes"
   },
   {
-    "summary": "Khoa Luong is requesting a meeting with the recipient.",
-    "priority": 1,
+    "summary": "This is a reminder for John about his meeting with the team scheduled for tomorrow at 10:00 AM, and he is asked to come prepared with project updates.",
+    "priority": 2,
     "intention": "Yes"
   }
 ]
