@@ -18,23 +18,6 @@ import {
  */
 export const createTable = pgTableCreator((name) => `hackathon_${name}`);
 
-export const posts = createTable(
-  "post",
-  {
-    id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
-    name: varchar("name", { length: 256 }),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
-      () => new Date()
-    ),
-  },
-  (example) => ({
-    nameIndex: index("name_idx").on(example.name),
-  })
-);
-
 export const emails = createTable(
   "emails",
   {
@@ -43,12 +26,11 @@ export const emails = createTable(
     summary: varchar("summary", { length: 512 }),
     priority: varchar("priority", { length: 10 }),
     title: varchar("title", { length: 256 }),
-    time: timestamp("time", { withTimezone: true }),
-    originalContent: varchar("originalContent", { length: 512 })
+    time: timestamp("email_time", { withTimezone: true }),
+    originalContent: varchar("originalContent", { length: 512 }),
   },
   (example) => ({
     priorityIndex: index("priority_idx").on(example.priority),
     priorityCheck: sql`CHECK (priority IN ('high', 'mid', 'low', 'none'))`,
-  })
+  }),
 );
-
