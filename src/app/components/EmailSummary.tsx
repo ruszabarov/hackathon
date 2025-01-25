@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "../../components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { Button } from "@components/ui/button";
 import {
   Card,
   CardHeader,
@@ -9,9 +9,18 @@ import {
   CardTitle,
   CardDescription,
   CardFooter,
-} from "../../components/ui/card";
+} from "@components/ui/card";
 import { cn } from "../../lib/utils";
 import { useRouter } from "next/navigation";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../../components/ui/dialog";
+import { ReplyEmailForm } from "./ReplyEmailForm";
+import { ScheduleEventForm } from "./ScheduleEventForm";
 
 interface EmailSummaryProps {
   subject: string;
@@ -36,6 +45,16 @@ export function EmailSummary({
   id,
 }: EmailSummaryProps) {
   const router = useRouter();
+
+  const handleReplySubmit = async (values: any) => {
+    // TODO: Implement email sending logic
+    console.log("Sending email:", values);
+  };
+
+  const handleScheduleSubmit = async (values: any) => {
+    // TODO: Implement event scheduling logic
+    console.log("Scheduling event:", values);
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -63,15 +82,42 @@ export function EmailSummary({
         </CardContent>
         <CardFooter className="flex justify-end">
           <div className="inline-flex w-full rounded-md border">
-            <Button
-              variant="ghost"
-              className="w-full rounded-none rounded-l-md border-r"
-            >
-              Reply with AI
-            </Button>
-            <Button variant="ghost" className="w-full rounded-none border-r">
-              Schedule with AI
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="w-full rounded-none rounded-l-md border-r"
+                >
+                  Reply with AI
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px]">
+                <DialogHeader>
+                  <DialogTitle>Reply to Email</DialogTitle>
+                </DialogHeader>
+                <ReplyEmailForm
+                  defaultTo={from}
+                  defaultSubject={subject}
+                  onSubmit={handleReplySubmit}
+                />
+              </DialogContent>
+            </Dialog>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="w-full rounded-none border-r"
+                >
+                  Schedule with AI
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px]">
+                <DialogHeader>
+                  <DialogTitle>Schedule Event</DialogTitle>
+                </DialogHeader>
+                <ScheduleEventForm onSubmit={handleScheduleSubmit} />
+              </DialogContent>
+            </Dialog>
             <Button
               variant="ghost"
               className="w-full rounded-none rounded-r-md border-l"
