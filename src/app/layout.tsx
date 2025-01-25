@@ -2,8 +2,8 @@ import "~/styles/globals.css";
 
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
-import TopNav from "./components/TopNav";
-import { ThemeProvider } from "./components/theme-provider";
+import TopNav from "./_components/TopNav";
+import { ThemeProvider } from "./_components/theme-provider";
 
 export const metadata: Metadata = {
   title: "Create T3 App",

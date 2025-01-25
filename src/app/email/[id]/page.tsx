@@ -1,5 +1,5 @@
 import { fetchEmail } from "../../../server/queries";
-import { EmailSummary } from "../../components/EmailSummary";
+import { EmailSummary } from "../../_components/EmailSummary";
 
 export default async function EmailPage({
   params,
