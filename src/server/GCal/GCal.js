@@ -95,6 +95,7 @@ async function scheduleEvent(event) {
     }
 }
 
+//testing
 async function testFunctions() {
     console.log('Testing loadOAuth2Client...');
     try {
@@ -114,6 +115,7 @@ async function testFunctions() {
     }
 }
 
+//schedule from specified email
 async function scheduleFromEmail(email) {
     try {
         // Call fetchCalendarEvents and wait for its completion
@@ -150,4 +152,4 @@ async function scheduleFromEmail(email) {
 // };
 
 // void scheduleFromEmail(sampleEmail);
-export { scheduleFromEmail, scheduleEvent };
+export { scheduleFromEmail, scheduleEvent, fetchCalendarEvents };
