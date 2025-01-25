@@ -1,0 +1,17 @@
+[
+  {
+    "summary": "Khoa is demanding a meeting with the recipient.",
+    "priority": 0,
+    "intention": "Yes"
+  },
+  {
+    "summary": "Khoa is requesting a meeting.",
+    "priority": 1,
+    "intention": "Yes"
+  },
+  {
+    "summary": "Your OpenAI API account was funded with $5.00, charged to your credit card ending in 8609, to update your credit balance.",
+    "priority": 3,
+    "intention": "No"
+  }
+]

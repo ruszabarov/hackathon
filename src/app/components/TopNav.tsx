@@ -13,7 +13,7 @@ import {
 } from "../../components/ui/dropdown-menu";
 
 const TopNav = () => {
-  const { setTheme, theme } = useTheme();
+  const { setTheme } = useTheme();
 
   return (
     <nav className="flex w-full items-center justify-between border-b border-zinc-700 p-4 text-xl font-semibold">
