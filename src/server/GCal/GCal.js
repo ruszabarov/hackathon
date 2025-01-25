@@ -73,73 +73,46 @@ async function fetchCalendarEvents(days = 10, fileName = 'calendarEvents.json') 
 
 //schedule events 
 async function scheduleEvent() {
-  try {
-    const oauth2Client = loadOAuth2Client();
-    const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+    try {
+        const oauth2Client = loadOAuth2Client();
+        const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+        const EVENTS_FILE_PATH = path.join(__dirname, 'schedule_events.json');
+        const data = fs.readFileSync(EVENTS_FILE_PATH, 'utf8');
+        const event = JSON.parse(data)[0];
+        console.log(event[0]);
 
-    //Date
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-    const date = String(today.getDate()).padStart(2, '0');
+        // Insert the event into the calendar
+        const response = await calendar.events.insert({
+            calendarId: 'primary',
+            requestBody: event,
+        });
 
-    // Define start and end times for 3 PM to 4 PM
-    const startTime = `${year}-${month}-${date}T15:00:00`;
-    const endTime = `${year}-${month}-${date}T16:00:00`;
-
-    // hardcoded for now 
-    const event = {
-      summary: 'Google I/O 2015',
-      location: '800 Howard St., San Francisco, CA 94103',
-      description: "A chance to hear more about Google's developer products.",
-      start: {
-        dateTime: startTime,
-        timeZone: 'America/New_York',
-      },
-      end: {
-        dateTime: endTime,
-        timeZone: 'America/New_York',
-      },
-      attendees: [
-        { email: 'lpage@example.com' },
-        { email: 'sbrin@example.com' },
-      ],
-    };
-
-
-
-
-    // Insert the event into the calendar
-    const response = await calendar.events.insert({
-      calendarId: 'primary',
-      requestBody: event,
-    });
-
-    console.log('Event created: %s', response.data.htmlLink);
-  } catch (error) {
-    console.error('Error scheduling event:', error);
-  }
+        console.log('Event created: %s', response.data.htmlLink);
+    } catch (error) {
+        console.error('Error scheduling event:', error);
+    }
 }
 
 async function testFunctions() {
     console.log('Testing loadOAuth2Client...');
     try {
-      const oauth2Client = loadOAuth2Client();
-      console.log('OAuth2 client loaded successfully.');
+        const oauth2Client = loadOAuth2Client();
+        console.log('OAuth2 client loaded successfully.');
     } catch (error) {
-      console.error('Error loading OAuth2 client:', error);
-      return;
+        console.error('Error loading OAuth2 client:', error);
+        return;
     }
-  
+
     console.log('Testing fetchAndSaveCalendarEvents...');
     try {
-      await fetchCalendarEvents(); // Fetch events and save to testEvents.json
-      console.log('fetchAndSaveCalendarEvents function executed successfully.');
+        await fetchCalendarEvents(); // Fetch events and save to testEvents.json
+        console.log('fetchAndSaveCalendarEvents function executed successfully.');
     } catch (error) {
-      console.error('Error in fetchAndSaveCalendarEvents:', error);
+        console.error('Error in fetchAndSaveCalendarEvents:', error);
     }
-  }
+}
 
 
-void testFunctions();
-export { fetchCalendarEvents, scheduleEvent};
+//void testFunctions();
+void scheduleEvent();
+export { fetchCalendarEvents, scheduleEvent };

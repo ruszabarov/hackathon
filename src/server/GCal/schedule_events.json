@@ -1,0 +1,20 @@
+[
+    {
+        "summary": "Meeting with Khoa Luong",
+        "description": "I demand a meeting with you.",
+        "location": "",
+        "start": {
+            "dateTime": "2025-01-25T21:00:00.000Z",
+            "timeZone": "America/New_York"
+        },
+        "end": {
+            "dateTime": "2025-01-25T22:00:00.000Z",
+            "timeZone": "America/New_York"
+        },
+        "attendees": [
+            {
+                "email": "minhkhoaluong0128@gmail.com"
+            }
+        ]
+    }
+]
