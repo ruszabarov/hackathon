@@ -46,14 +46,14 @@ export function EmailSummary({
 }: EmailSummaryProps) {
   const router = useRouter();
 
-  const handleReplySubmit = async (values: any) => {
+  const handleReplySubmit = async () => {
     // TODO: Implement email sending logic
-    console.log("Sending email:", values);
+    console.log("Sending email:");
   };
 
-  const handleScheduleSubmit = async (values: any) => {
+  const handleScheduleSubmit = async () => {
     // TODO: Implement event scheduling logic
-    console.log("Scheduling event:", values);
+    console.log("Scheduling event:");
   };
 
   return (
