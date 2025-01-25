@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "summary": "Khoa Luong is requesting to schedule a meeting.",
+    "priority": 1,
+    "intention": "Yes"
+  },
+  {
+    "summary": "Khoa Luong is requesting a meeting with the recipient.",
+    "priority": 1,
+    "intention": "Yes"
+  }
+]
