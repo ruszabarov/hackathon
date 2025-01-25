@@ -250,46 +250,46 @@ export async function processEmail(
   }
 }
 
-(async () => {
-  const sampleEmail = {
-    id: "2",
-    title: "Urgent: !@#$$%Meeting%",
-    sender: "Jane Smith <jane.smith@example.com>",
-    content: `Let's mee%t & discuss the upcoming proj\\\]ect launch.`,
-    timestamp: "InvalidDate",
-  };
+// (async () => {
+//   const sampleEmail = {
+//     id: "2",
+//     title: "Urgent: !@#$$%Meeting%",
+//     sender: "Jane Smith <jane.smith@example.com>",
+//     content: `Let's mee%t & discuss the upcoming proj\\\]ect launch.`,
+//     timestamp: "InvalidDate",
+//   };
 
-  const busyEvents = [
+//   const busyEvents = [
     
-    {
-      "start": "2025-01-25T15:00:00-05:00",
-      "end": "2025-01-25T16:00:00-05:00",
-      "summary": "Google I/O 2015"
-    },
-    {
-      "start": "2025-01-25T20:30:00-05:00",
-      "end": "2025-01-25T21:30:00-05:00",
-      "summary": "meeting "
-    }, 
-    {
-      "start": "2025-02-25T20:30:00-05:00",
-      "end": "2025-02-25T21:30:00-05:00",
-      "summary": "meeting "
-    }
+//     {
+//       "start": "2025-01-25T15:00:00-05:00",
+//       "end": "2025-01-25T16:00:00-05:00",
+//       "summary": "Google I/O 2015"
+//     },
+//     {
+//       "start": "2025-01-25T20:30:00-05:00",
+//       "end": "2025-01-25T21:30:00-05:00",
+//       "summary": "meeting "
+//     }, 
+//     {
+//       "start": "2025-02-25T20:30:00-05:00",
+//       "end": "2025-02-25T21:30:00-05:00",
+//       "summary": "meeting "
+//     }
     
-  ]
+//   ]
 
-  const query =
-    "Please provide a professional reply confirming the next meeting time.";
+//   const query =
+//     "Please provide a professional reply confirming the next meeting time.";
 
-  try {
-    const responseReplyWithAI = await replyWithAI(sampleEmail, query);
-    const processEmailAI = await processEmail(sampleEmail);
-    console.log("Generated Reply with AI:", responseReplyWithAI);
-    console.log("Processed Email with AI", processEmailAI);
-    const date = await fetchTimeFromEmail(sampleEmail, busyEvents)
-    console.log("Test suggested time", date)
-  } catch (error) {
-    console.error("Test Error:", error);
-  }
-})().catch(console.error);
+//   try {
+//     const responseReplyWithAI = await replyWithAI(sampleEmail, query);
+//     const processEmailAI = await processEmail(sampleEmail);
+//     console.log("Generated Reply with AI:", responseReplyWithAI);
+//     console.log("Processed Email with AI", processEmailAI);
+//     const date = await fetchTimeFromEmail(sampleEmail, busyEvents)
+//     console.log("Test suggested time", date)
+//   } catch (error) {
+//     console.error("Test Error:", error);
+//   }
+// })().catch(console.error);

@@ -62,8 +62,6 @@ async function scheduleEvent() {
     };
 
 
-
-
     // Insert the event into the calendar
     const response = await calendar.events.insert({
       calendarId: 'primary',
