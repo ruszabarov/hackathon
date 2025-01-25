@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Card,
   CardHeader,
@@ -8,26 +10,19 @@ import {
 import { cn } from "../../lib/utils";
 import { useRouter } from "next/navigation";
 
-export enum Priority {
-  None = "None",
-  Low = "Low",
-  Medium = "Medium",
-  High = "High",
-}
-
 interface EmailSummaryProps {
   subject: string;
   content: string;
-  priority: Priority;
+  priority: number;
   from: string;
   id: string;
 }
 
 const priorityColorMap = {
-  [Priority.None]: "bg-secondary",
-  [Priority.Low]: "bg-blue-500",
-  [Priority.Medium]: "bg-yellow-500",
-  [Priority.High]: "bg-red-600",
+  [3]: "bg-secondary",
+  [2]: "bg-blue-500",
+  [1]: "bg-yellow-500",
+  [0]: "bg-red-600",
 };
 
 export function EmailSummaryCard({
@@ -51,7 +46,7 @@ export function EmailSummaryCard({
       <div
         className={cn(
           "absolute right-3 top-3 h-4 w-4 rounded-full",
-          priorityColorMap[priority],
+          priorityColorMap[priority as keyof typeof priorityColorMap],
         )}
       />
       <CardHeader>
