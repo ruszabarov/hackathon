@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Check } from "lucide-react";
 import { Button } from "@components/ui/button";
 import {
   Card,
@@ -41,6 +41,7 @@ interface EmailSummaryProps {
   from: string;
   id: string;
   originalEmail: string;
+  replied: string,
   }
 
 const priorityColorMap = {
@@ -64,6 +65,7 @@ export function EmailSummary({
   from,
   id,
   originalEmail,
+  replied,
   }: EmailSummaryProps) {
   const router = useRouter();
   const [showOriginal, setShowOriginal] = useState(false);
@@ -105,13 +107,17 @@ export function EmailSummary({
         <TooltipProvider>
           <Tooltip>
           <TooltipTrigger asChild>
-              <div
-                className={cn(
-                  "absolute right-3 top-3 h-6 w-6 rounded-full p-4",
-                  priorityColorMap[priority as keyof typeof priorityColorMap] ??
-                    "bg-red-600",
-                )}
-              />
+          <div className="absolute top-3 right-3 flex items-center space-x-1">
+            {replied === "Yes" && (
+              <Check className="h-4 w-4 text-green-500" aria-hidden="true" />
+            )}
+            <div
+              className={cn(
+                "h-4 w-4 rounded-full",
+                priorityColorMap[priority as keyof typeof priorityColorMap]
+              )}
+            />
+          </div>
           </TooltipTrigger>
             <TooltipContent>
               <p>

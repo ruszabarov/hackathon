@@ -9,6 +9,7 @@ import {
 } from "@components/ui/card";
 import { cn } from "../../lib/utils";
 import { useRouter } from "next/navigation";
+import { Check } from "lucide-react";
 
 interface EmailSummaryProps {
   subject: string;
@@ -16,6 +17,7 @@ interface EmailSummaryProps {
   priority: number;
   from: string;
   id: string;
+  replied: string; 
 }
 
 const priorityColorMap = {
@@ -31,6 +33,7 @@ export function EmailSummaryCard({
   priority,
   from,
   id,
+  replied,
 }: EmailSummaryProps) {
   const router = useRouter();
 
@@ -38,17 +41,25 @@ export function EmailSummaryCard({
     router.push(`/email/${id}`);
   };
 
+  console.log(replied)
+
+
   return (
     <Card
       onClick={handleClick}
       className="group relative transform cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-lg"
     >
-      <div
-        className={cn(
-          "absolute right-3 top-3 h-4 w-4 rounded-full",
-          priorityColorMap[priority as keyof typeof priorityColorMap],
+      <div className="absolute top-3 right-3 flex items-center space-x-1">
+        {replied === "Yes" && (
+          <Check strokeWidth={3} className="h-4 w-4 text-green-500" aria-hidden="true" />
         )}
-      />
+        <div
+          className={cn(
+            "h-4 w-4 rounded-full",
+            priorityColorMap[priority as keyof typeof priorityColorMap]
+          )}
+        />
+      </div>
       <CardHeader>
         <CardTitle>{subject}</CardTitle>
         <CardDescription>{from}</CardDescription>
