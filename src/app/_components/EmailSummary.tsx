@@ -30,6 +30,8 @@ import {
   TooltipTrigger,
 } from "@components/ui/tooltip";
 import type { z } from "zod";
+import { sendEmail } from "../../server/gmail"
+import { or } from "drizzle-orm";
 
 interface EmailSummaryProps {
   subject: string;
@@ -66,8 +68,21 @@ export function EmailSummary({
   const [showOriginal, setShowOriginal] = useState(false);
 
   const handleReplySubmit = async (values: z.infer<typeof formSchema>) => {
-    // TODO: Implement email sending logic
-    console.log("Sending email:", values);
+    const { to, subject, originalContent } = values;
+  
+    try {
+      
+      const response = await sendEmail(to, subject, originalContent);
+  
+      if (response) {
+        console.log("Email sent successfully!");
+        router.back()
+      } else {
+        console.error("Failed to send email");
+      }
+    } catch (error) {
+      console.error("Error in handleReplySubmit:", error);
+    }
   };
 
   const handleScheduleSubmit = async () => {

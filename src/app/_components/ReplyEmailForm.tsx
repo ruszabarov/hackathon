@@ -43,10 +43,12 @@ export function ReplyEmailForm({
   onSubmit,
 }: ReplyEmailFormProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const emailOnly = defaultTo.match(/<(.*)>/)?.[1] || defaultTo;
+  const nameOnly = defaultTo.match(/^(.*)</)?.[1]?.trim() || "";
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      to: defaultTo || "",
+      to: emailOnly || "",
       subject: defaultSubject.startsWith("Re:")
         ? defaultSubject
         : `Re: ${defaultSubject}`,
@@ -66,7 +68,7 @@ export function ReplyEmailForm({
     try {
       const result = await replyWithAIAction(
         subject,
-        to,
+        nameOnly,
         originalContent,
         aiPrompt,
       );
