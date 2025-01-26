@@ -2,6 +2,7 @@
 
 import { db } from "./db";
 import { emails } from "./db/schema";
+import { preference } from "./db/schema";
 import { eq } from "drizzle-orm";
 import { fetchGmails, processFetchedGmails } from "./gmail";
 
@@ -42,3 +43,10 @@ export async function updateEmailStatus(emailId: number, repliedStatus: string) 
     .set({ replied: repliedStatus })
     .where(eq(emails.emailId, emailId));
 }
+
+export async function getPreference(){
+  const preferenceData = await db.select().from(preference);
+  return preferenceData[0]?.summary
+}
+
+

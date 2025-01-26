@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
+import { getPreference } from "./queries";
 
 
 console.log(process.env.OPENAI_API_KEY);
@@ -58,6 +59,7 @@ export async function fetchTimeFromTask(
   busyEvents: BusyEvent[],
 ): Promise<CalendarEventPayload | undefined> {
   try {
+    const preference = await getPreference()
     // System prompt: instruct the model exactly how to respond
     const systemMessage = {
       role: "system" as const,
@@ -71,6 +73,7 @@ export async function fetchTimeFromTask(
         - "summary" should be no longer than 120 characters.
         - "timezone" should be determined based on the email or busy events. If not specified, default to "UTC". 
         - "description" is optional but can include extra context (like the original email text or a short summary).
+        - If a relevant "preference" is provided, customize the result to align with that preference.
       `,
     };
     console.log(systemMessage)
@@ -82,6 +85,10 @@ export async function fetchTimeFromTask(
       Here is the task:
 
       Title: ${task}
+
+
+      Here is the user preference:
+      ${preference?.length ? preference : "no preference"}
 
 
       Please return only a single JSON object matching the schema above and nothing else.

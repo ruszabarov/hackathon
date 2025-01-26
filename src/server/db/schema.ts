@@ -33,3 +33,11 @@ export const emails = createTable(
     priorityIndex: index("priority_idx").on(example.priority),
   }),
 );
+
+export const preference = createTable(
+  "preference",
+  {
+    summary: varchar("summary", { length: 256 }),
+  },
+);
+
