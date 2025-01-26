@@ -19,7 +19,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@components/ui/dialog";
-import { ReplyEmailForm } from "./ReplyEmailForm";
+import { ReplyEmailForm, type formSchema } from "./ReplyEmailForm";
 import { ScheduleEventForm } from "./ScheduleEventForm";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -29,6 +29,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@components/ui/tooltip";
+import type { z } from "zod";
 
 interface EmailSummaryProps {
   subject: string;
@@ -64,9 +65,9 @@ export function EmailSummary({
   const router = useRouter();
   const [showOriginal, setShowOriginal] = useState(false);
 
-  const handleReplySubmit = async () => {
+  const handleReplySubmit = async (values: z.infer<typeof formSchema>) => {
     // TODO: Implement email sending logic
-    console.log("Sending email:");
+    console.log("Sending email:", values);
   };
 
   const handleScheduleSubmit = async () => {

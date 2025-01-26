@@ -12,11 +12,22 @@ import {
 } from "@components/ui/form";
 import { Input } from "@components/ui/input";
 import { Textarea } from "@components/ui/textarea";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@components/ui/tooltip";
+import { ArrowRight, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { replyWithAIAction } from "~/server/actions";
 
-const formSchema = z.object({
+export const formSchema = z.object({
   to: z.string().email({ message: "Please enter a valid email address" }),
   subject: z.string().min(1, { message: "Subject is required" }),
-  originalContent: z.string().min(1, { message: "Message content is required" }),
+  originalContent: z
+    .string()
+    .min(1, { message: "Message content is required" }),
   aiPrompt: z.string().optional(),
 });
 
@@ -31,6 +42,7 @@ export function ReplyEmailForm({
   defaultSubject = "",
   onSubmit,
 }: ReplyEmailFormProps) {
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -38,46 +50,36 @@ export function ReplyEmailForm({
       subject: defaultSubject.startsWith("Re:")
         ? defaultSubject
         : `Re: ${defaultSubject}`,
-      originalContent: "", 
-      aiPrompt: "", 
+      originalContent: "",
+      aiPrompt: "",
     },
   });
 
+  const handlePromptSubmit = async () => {
+    const { to, subject, originalContent, aiPrompt } = form.getValues();
 
-  const handleKeyPress = async (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
+    if (!aiPrompt) {
+      return;
+    }
 
-      const { to, subject, originalContent, aiPrompt } = form.getValues();
+    setIsLoading(true);
+    try {
+      const result = await replyWithAIAction(
+        subject,
+        to,
+        originalContent,
+        aiPrompt,
+      );
 
-      if (!aiPrompt) { return; }
-
-      try {
-        const response = await fetch("/api/emails", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            action: "replyWithAI",
-            title: subject,
-            sender: to,
-            content: originalContent,
-            aiPrompt: aiPrompt,
-          }),
-        });
-
-        const result = await response.json();
-        console.log(result)
-        if (result.success && result.reply) {
-          form.setValue("originalContent", result.reply);
-        } else {
-          console.error("Failed to generate AI reply:", result.error);
-        }
-      } catch (error) {
-        console.error("Error generating AI reply:", error);
-      } finally {
+      if (result.success && result.reply) {
+        form.setValue("originalContent", result.reply);
+      } else {
+        console.error("Failed to generate AI reply:", result.error);
       }
+    } catch (error) {
+      console.error("Error generating AI reply:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -117,14 +119,36 @@ export function ReplyEmailForm({
           render={({ field }) => (
             <FormItem className="mb-4">
               <FormLabel>AI Prompt</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Generate with AI"
-                  className="w-full"
-                  {...field}
-                  onKeyDown={handleKeyPress}
-                />
-              </FormControl>
+              <div className="flex gap-2">
+                <FormControl>
+                  <Input
+                    placeholder="Generate with AI"
+                    className="w-full"
+                    {...field}
+                  />
+                </FormControl>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        type="button"
+                        size="icon"
+                        onClick={handlePromptSubmit}
+                        disabled={isLoading}
+                      >
+                        {isLoading ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <ArrowRight className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Send prompt</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
               <FormMessage />
             </FormItem>
           )}
@@ -147,7 +171,7 @@ export function ReplyEmailForm({
             </FormItem>
           )}
         />
-  
+
         <div className="mt-6 flex justify-end space-x-2">
           <Button type="submit">Send Reply</Button>
         </div>
