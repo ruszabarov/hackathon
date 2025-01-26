@@ -1,0 +1,12 @@
+[
+  {
+    "summary": "Hey Russ, you got a delivery failure notification from the mail system.",
+    "priority": 3,
+    "intention": "No"
+  },
+  {
+    "summary": "You got a delivery failure notification from the mail system.",
+    "priority": 3,
+    "intention": "No"
+  }
+]

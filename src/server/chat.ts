@@ -59,7 +59,7 @@ export async function fetchTimeFromTask(
         You are an assistant that schedule events given task. 
         The task content will be provided, and your task is to propose a single 
         calendar event in valid JSON. 
-        - The "start" and "end" must be valid date/time in ISO 8601 format. Do not schedule past 10PM.
+        - The "start" and "end" must be valid date/time in ISO 8601 format.
         - Schedule a date and time that is free. Here are the user's busy slots:
         ${JSON.stringify(busyEvents, null, 2)}
         - "summary" should be no longer than 120 characters.
