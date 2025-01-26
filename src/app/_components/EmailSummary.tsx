@@ -18,9 +18,17 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../../components/ui/dialog";
+} from "@components/ui/dialog";
 import { ReplyEmailForm } from "./ReplyEmailForm";
 import { ScheduleEventForm } from "./ScheduleEventForm";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@components/ui/tooltip";
 
 interface EmailSummaryProps {
   subject: string;
@@ -28,6 +36,7 @@ interface EmailSummaryProps {
   priority: number;
   from: string;
   id: string;
+  originalEmail: string;
 }
 
 const priorityColorMap = {
@@ -37,14 +46,23 @@ const priorityColorMap = {
   [0]: "bg-red-600",
 };
 
+const priorityLabels = {
+  [3]: "Low Priority",
+  [2]: "Medium Priority",
+  [1]: "High Priority",
+  [0]: "Urgent",
+};
+
 export function EmailSummary({
   subject,
   content,
   priority,
   from,
   id,
+  originalEmail,
 }: EmailSummaryProps) {
   const router = useRouter();
+  const [showOriginal, setShowOriginal] = useState(false);
 
   const handleReplySubmit = async () => {
     // TODO: Implement email sending logic
@@ -60,25 +78,49 @@ export function EmailSummary({
     <div className="container mx-auto p-4">
       <button
         onClick={() => router.back()}
-        className="mb-4 flex items-center gap-2 text-muted-foreground transition-colors hover:text-white"
+        className="mb-4 flex items-center gap-2 text-muted-foreground transition-colors hover:text-primary"
       >
         <ArrowLeft className="h-4 w-4" />
         Back to Inbox
       </button>
       <Card className="relative">
-        <div
-          className={cn(
-            "absolute right-3 top-3 h-6 w-6 rounded-full p-4",
-            priorityColorMap[priority as keyof typeof priorityColorMap] ??
-              "bg-red-600",
-          )}
-        />
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div
+                className={cn(
+                  "absolute right-3 top-3 h-6 w-6 rounded-full p-4",
+                  priorityColorMap[priority as keyof typeof priorityColorMap] ??
+                    "bg-red-600",
+                )}
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>
+                {priorityLabels[priority as keyof typeof priorityLabels] ??
+                  "Unknown Priority"}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <CardHeader>
           <CardTitle>{subject ?? ""}</CardTitle>
           <CardDescription>{from ?? ""}</CardDescription>
         </CardHeader>
         <CardContent>
-          <p>{content}</p>
+          <div className="relative">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={showOriginal ? "original" : "summary"}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
+              >
+                <p>{showOriginal ? originalEmail : content}</p>
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </CardContent>
         <CardFooter className="flex justify-end">
           <div className="inline-flex w-full rounded-md border">
@@ -121,8 +163,9 @@ export function EmailSummary({
             <Button
               variant="ghost"
               className="w-full rounded-none rounded-r-md border-l"
+              onClick={() => setShowOriginal(!showOriginal)}
             >
-              View Original
+              {showOriginal ? "View summary" : "View original"}
             </Button>
           </div>
         </CardFooter>

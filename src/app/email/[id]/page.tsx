@@ -24,6 +24,7 @@ export default async function EmailPage({
       content={email.summary ?? ""}
       priority={email.priority ?? 0}
       from={email.sender ?? ""}
+      originalEmail={email.originalContent ?? ""}
     />
   );
 }
