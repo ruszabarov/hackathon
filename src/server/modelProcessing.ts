@@ -147,7 +147,9 @@ export async function fetchTimeFromEmail(
 
 // takes in the email json and a query and return the suggested
 export async function replyWithAI(
-  email: EmailPayload,
+  title: String, 
+  sender: String,
+  content: string,
   query: string,
 ): Promise<replyEmailPayload> {
   try {
@@ -156,6 +158,7 @@ export async function replyWithAI(
       content: `
         You are an AI assistant that drafts professional email replies. The email details will be provided as user content.
         Craft a polite and clear response and appropriate title based on the query and the provided email context. Your name is Khoa. 
+        Users query: ${query}
       `,
     };
 
@@ -163,10 +166,9 @@ export async function replyWithAI(
       role: "user" as const,
       content: `
         Here is the email information:
-        Title: ${email.title}
-        Sender: ${email.sender}
-        Content: ${email.content}
-        Timestamp: ${email.timestamp}
+        Title: ${title}
+        Sender: ${sender}
+        Content: ${content}
       `,
     };
 
@@ -250,46 +252,47 @@ export async function processEmail(
   }
 }
 
-// (async () => {
-//   const sampleEmail = {
-//     id: "2",
-//     title: "Urgent: !@#$$%Meeting%",
-//     sender: "Jane Smith <jane.smith@example.com>",
-//     content: `Let's mee%t & discuss the upcoming proj\\\]ect launch.`,
-//     timestamp: "InvalidDate",
-//   };
+(async () => {
+  const sampleEmail = {
+    id: "2",
+    title: "Urgent: !@#$$%Meeting%",
+    sender: "Jane Smith <jane.smith@example.com>",
+    content: `Let's mee%t & discuss the upcoming proj\\\]ect launch.`,
+    timestamp: "InvalidDate",
+  };
 
-//   const busyEvents = [
+  const busyEvents = [
     
-//     {
-//       "start": "2025-01-25T15:00:00-05:00",
-//       "end": "2025-01-25T16:00:00-05:00",
-//       "summary": "Google I/O 2015"
-//     },
-//     {
-//       "start": "2025-01-25T20:30:00-05:00",
-//       "end": "2025-01-25T21:30:00-05:00",
-//       "summary": "meeting "
-//     }, 
-//     {
-//       "start": "2025-02-25T20:30:00-05:00",
-//       "end": "2025-02-25T21:30:00-05:00",
-//       "summary": "meeting "
-//     }
+    {
+      "start": "2025-01-25T15:00:00-05:00",
+      "end": "2025-01-25T16:00:00-05:00",
+      "summary": "Google I/O 2015"
+    },
+    {
+      "start": "2025-01-25T20:30:00-05:00",
+      "end": "2025-01-25T21:30:00-05:00",
+      "summary": "meeting "
+    }, 
+    {
+      "start": "2025-02-25T20:30:00-05:00",
+      "end": "2025-02-25T21:30:00-05:00",
+      "summary": "meeting "
+    }
     
-//   ]
+  ]
 
-//   const query =
-//     "Please provide a professional reply confirming the next meeting time.";
+  const query =
+    "Please provide a professional reply confirming the next meeting time.";
+  
+  const title = "hello";
+  const sender = "khoa";
+  const content = "please schedule meetnig"
 
-//   try {
-//     const responseReplyWithAI = await replyWithAI(sampleEmail, query);
-//     const processEmailAI = await processEmail(sampleEmail);
-//     console.log("Generated Reply with AI:", responseReplyWithAI);
-//     console.log("Processed Email with AI", processEmailAI);
-//     const date = await fetchTimeFromEmail(sampleEmail, busyEvents)
-//     console.log("Test suggested time", date)
-//   } catch (error) {
-//     console.error("Test Error:", error);
-//   }
-// })().catch(console.error);
+
+  try {
+    const responseReplyWithAI = await replyWithAI(title, sender, content, query);
+    console.log("Generated Reply with AI:", responseReplyWithAI);
+  } catch (error) {
+    console.error("Test Error:", error);
+  }
+})().catch(console.error);

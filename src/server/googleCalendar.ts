@@ -93,7 +93,7 @@ export async function scheduleEvent(event: Event): Promise<void> {
   }
 }
 
-async function getOAuthClient(clerkUserId: string) {
+export async function getOAuthClient(clerkUserId: string) {
   const clerk = await clerkClient();
 
   const token = await clerk.users.getUserOauthAccessToken(

@@ -17,10 +17,26 @@ export default function RefreshButton() {
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    // Refresh the current route
-    router.refresh();
-    // Add a small delay before enabling the button again
-    setTimeout(() => setIsRefreshing(false), 1000);
+    try {
+      const response = await fetch('/api/emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: 'processAndStore' }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to process emails.');
+      }
+
+      router.refresh();
+    } catch (err: any) {
+      console.error("Failed to refresh:", err);
+    } finally {
+      setIsRefreshing(false);
+    }
   };
 
   return (
