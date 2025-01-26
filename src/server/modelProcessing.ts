@@ -152,8 +152,8 @@ export async function replyWithAI(
     const systemMessage = {
       role: "system" as const,
       content: `
-        You are an AI assistant that drafts professional email replies. The email details will be provided as user content.
-        Craft a polite and clear response and appropriate title based on the query and the provided email context. 
+        You are an AI assistant that drafts email replies. The email details will be provided as user content.
+        Craft a clear and appropriate response and appropriate title based on the query and the provided email context. 
         If a relevant "preference" is provided, customize the result to align with that preference.
         Users query: ${query}
         User preference: ${preference?.length ? preference : "no preference"}

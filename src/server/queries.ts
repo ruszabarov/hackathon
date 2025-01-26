@@ -49,4 +49,15 @@ export async function getPreference(){
   return preferenceData[0]?.summary
 }
 
-
+export async function updatePreference(newPreference: string) {
+  try {
+    // Update the single row in the preferences table
+    await db.update(preference)
+      .set({ summary: newPreference }) // Replace 'value' with your column name
+      .execute();
+    console.log("Preference updated successfully");
+  } catch (error) {
+    console.error("Error updating preference:", error);
+    throw error;
+  }
+}
