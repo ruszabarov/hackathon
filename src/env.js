@@ -12,6 +12,9 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
+    OAUTH2_CLIENT_ID: z.string().min(1),
+    OAUTH2_CLIENT_SECRET: z.string().min(1),
+    REDIRECT_URL: z.string().min(1),
   },
 
   /**
@@ -31,7 +34,9 @@ export const env = createEnv({
     POSTGRES_URL: process.env.POSTGRES_URL,
     NODE_ENV: process.env.NODE_ENV,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
-    // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
+    OAUTH2_CLIENT_ID: process.env.OAUTH2_CLIENT_ID,
+    OAUTH2_CLIENT_SECRET: process.env.OAUTH2_CLIENT_SECRET,
+    REDIRECT_URL: process.env.REDIRECT_URL,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

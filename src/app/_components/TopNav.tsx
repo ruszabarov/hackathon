@@ -1,7 +1,6 @@
 "use client";
 
 import { MailCheck, Sun, Moon, Laptop } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { Button } from "@components/ui/button";
@@ -11,6 +10,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@components/ui/dropdown-menu";
+import { SignInButton, UserButton } from "@clerk/nextjs";
+import { SignedOut } from "@clerk/nextjs";
+import { SignedIn } from "@clerk/nextjs";
 
 const TopNav = () => {
   const { setTheme } = useTheme();
@@ -61,15 +63,12 @@ const TopNav = () => {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Link href="/account">
-          <Image
-            src="/profile-pic.png"
-            alt="Profile"
-            width={40}
-            height={40}
-            className="rounded-full"
-          />
-        </Link>
+        <SignedOut>
+          <SignInButton />
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
       </div>
     </nav>
   );
