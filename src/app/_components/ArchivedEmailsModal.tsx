@@ -49,7 +49,7 @@ export function ArchivedEmailsModal() {
         <DialogHeader>
           <DialogTitle>Archived Emails</DialogTitle>
         </DialogHeader>
-        <div className="max-h-[500px] space-y-4 overflow-y-auto">
+        <div className="max-h-[500px] space-y-4 overflow-y-auto p-4">
           {archivedEmails.map((email) => (
             <EmailSummaryCard
               key={email.emailId}
@@ -59,6 +59,7 @@ export function ArchivedEmailsModal() {
               from={email.sender ?? ""}
               id={email.emailId.toString()}
               replied={email.replied ?? "No"}
+              isArchived={true}
             />
           ))}
         </div>

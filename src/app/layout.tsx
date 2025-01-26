@@ -4,6 +4,7 @@ import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 import TopNav from "./_components/TopNav";
 import { ThemeProvider } from "./_components/theme-provider";
+import { Toaster } from "@components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "Monday",
@@ -32,6 +33,7 @@ export default function RootLayout({
               <TopNav />
               <main className="flex-1 overflow-auto p-4">{children}</main>
             </div>
+            <Toaster />
           </ThemeProvider>
         </body>
       </html>

@@ -14,6 +14,7 @@ import { SignInButton, UserButton } from "@clerk/nextjs";
 import { SignedOut } from "@clerk/nextjs";
 import { SignedIn } from "@clerk/nextjs";
 import { ArchivedEmailsModal } from "./ArchivedEmailsModal";
+import { PreferencesModal } from "./PreferencesModal";
 
 const TopNav = () => {
   const { setTheme } = useTheme();
@@ -22,9 +23,7 @@ const TopNav = () => {
     <nav className="flex w-full items-center justify-between border-b border-zinc-700 p-4 text-xl font-semibold">
       <div className="flex items-center gap-10">
         <Link href="/" className="flex items-center justify-center">
-          <span className="ml-2 text-xl font-bold leading-none">
-            Monday
-          </span>
+          <span className="ml-2 text-xl font-bold leading-none">Monday</span>
         </Link>
         <div className="flex items-center justify-center gap-4">
           <Link href="/email" className="flex items-center">
@@ -41,6 +40,7 @@ const TopNav = () => {
       </div>
       <div className="flex items-center gap-4">
         <ArchivedEmailsModal />
+        <PreferencesModal />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="icon">

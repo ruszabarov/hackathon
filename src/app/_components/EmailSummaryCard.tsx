@@ -21,6 +21,7 @@ interface EmailSummaryProps {
   from: string;
   id: string;
   replied: string;
+  isArchived?: boolean;
 }
 
 const priorityColorMap = {
@@ -37,6 +38,7 @@ export function EmailSummaryCard({
   from,
   id,
   replied,
+  isArchived = false,
 }: EmailSummaryProps) {
   const router = useRouter();
   const [isArchiving, setIsArchiving] = useState(false);
@@ -78,13 +80,15 @@ export function EmailSummaryCard({
         />
       </div>
       <CardHeader>
-        <CardTitle>{subject}</CardTitle>
+        <CardTitle className="mr-2">{subject}</CardTitle>
         <CardDescription>{from}</CardDescription>
       </CardHeader>
       <CardContent>
         <p className="text-sm text-muted-foreground">{content}</p>
       </CardContent>
-      <ArchiveButton onArchive={handleArchive} isArchiving={isArchiving} />
+      {!isArchived && (
+        <ArchiveButton onArchive={handleArchive} isArchiving={isArchiving} />
+      )}
     </Card>
   );
 }

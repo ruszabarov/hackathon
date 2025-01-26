@@ -1,4 +1,5 @@
 import { SignedOut, SignedIn } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
 
 export default function HomePage() {
   return (
@@ -8,9 +9,7 @@ export default function HomePage() {
           Please sign in above
         </div>
       </SignedOut>
-      <SignedIn>
-        <div className="container mx-auto p-4">home</div>;
-      </SignedIn>
+      <SignedIn>{redirect("/email")}</SignedIn>
     </main>
   );
 }
