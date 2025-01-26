@@ -20,6 +20,7 @@ import {
 } from "@components/ui/tooltip";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { replyWithAIAction } from "~/server/actions";
 
 const formSchema = z.object({
   to: z.string().email({ message: "Please enter a valid email address" }),
@@ -63,21 +64,13 @@ export function ReplyEmailForm({
 
     setIsLoading(true);
     try {
-      const response = await fetch("/api/emails", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          action: "replyWithAI",
-          title: subject,
-          sender: to,
-          content: originalContent,
-          aiPrompt: aiPrompt,
-        }),
-      });
+      const result = await replyWithAIAction(
+        subject,
+        to,
+        originalContent,
+        aiPrompt,
+      );
 
-      const result = await response.json();
       if (result.success && result.reply) {
         form.setValue("originalContent", result.reply);
       } else {

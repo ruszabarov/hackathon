@@ -10,6 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@components/ui/tooltip";
+import { fetchProcessAndStoreEmails } from "../../server/queries";
 
 export default function RefreshButton() {
   const router = useRouter();
@@ -18,19 +19,7 @@ export default function RefreshButton() {
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
-      const response = await fetch('/api/emails', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ action: 'processAndStore' }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to process emails.');
-      }
-
+      await fetchProcessAndStoreEmails();
       router.refresh();
     } catch (err: any) {
       console.error("Failed to refresh:", err);

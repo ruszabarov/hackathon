@@ -1,10 +1,14 @@
 "use server";
 import { google } from "googleapis";
-import { clerkClient, auth } from "@clerk/nextjs/server";
-import { getOAuthClient } from "./googleCalendar"
+import { auth } from "@clerk/nextjs/server";
+import { getOAuthClient } from "./googleCalendar";
 import path from "path";
 import fs from "fs";
-import { EmailPayload, ProcessedEmailPayload, processEmail } from "./modelProcessing";
+import {
+  EmailPayload,
+  ProcessedEmailPayload,
+  processEmail,
+} from "./modelProcessing";
 
 export async function fetchGmails() {
   const { userId } = await auth();
@@ -19,7 +23,7 @@ export async function fetchGmails() {
 
   const gmail = google.gmail({ version: "v1", auth: oAuthClient });
   const query = "is:unread";
-  
+
   try {
     const listRes = await gmail.users.messages.list({
       userId: "me",
@@ -77,10 +81,8 @@ export async function fetchGmails() {
   }
 }
 
-
-
 export async function processFetchedGmails(
-  emailData: EmailPayload[]
+  emailData: EmailPayload[],
 ): Promise<ProcessedEmailPayload[]> {
   try {
     const processedEmails: ProcessedEmailPayload[] = [];
@@ -94,7 +96,7 @@ export async function processFetchedGmails(
     fs.writeFileSync(
       OUTPUT_PATH,
       JSON.stringify(processedEmails, null, 2),
-      "utf8"
+      "utf8",
     );
 
     console.log("Processed emails have been saved to processed_emails.json");
@@ -104,4 +106,3 @@ export async function processFetchedGmails(
     throw error;
   }
 }
-

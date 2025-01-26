@@ -1,8 +1,9 @@
+"use server";
+
 import { db } from "./db";
 import { emails } from "./db/schema";
 import { eq } from "drizzle-orm";
-import { fetchGmails, processFetchedGmails } from "./gmail"; 
-
+import { fetchGmails, processFetchedGmails } from "./gmail";
 
 export async function fetchEmails() {
   return await db.select().from(emails).orderBy(emails.email_time);
@@ -22,8 +23,6 @@ export async function fetchProcessAndStoreEmails() {
   for (let i = 0; i < rawEmails.length; i++) {
     const raw = rawEmails[i];
     const processed = processedEmails[i];
-
-
 
     await db.insert(emails).values({
       sender: raw?.sender,
