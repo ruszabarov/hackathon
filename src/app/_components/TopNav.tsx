@@ -21,9 +21,8 @@ const TopNav = () => {
     <nav className="flex w-full items-center justify-between border-b border-zinc-700 p-4 text-xl font-semibold">
       <div className="flex items-center gap-10">
         <Link href="/" className="flex items-center justify-center">
-          <MailCheck className="h-6 w-6" />
           <span className="ml-2 text-xl font-bold leading-none">
-            InboxGenius
+            Monday
           </span>
         </Link>
         <div className="flex items-center justify-center gap-4">
