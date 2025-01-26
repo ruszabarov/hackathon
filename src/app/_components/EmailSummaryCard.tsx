@@ -12,7 +12,7 @@ import { cn } from "../../lib/utils";
 import { useRouter } from "next/navigation";
 import { Check, Archive } from "lucide-react";
 import ArchiveButton from "./ArchiveButton";
-import { archiveEmail} from "../../server/queries"
+import { archiveEmail } from "../../server/queries";
 
 interface EmailSummaryProps {
   subject: string;
@@ -49,14 +49,13 @@ export function EmailSummaryCard({
     setIsArchiving(true);
     try {
       await archiveEmail(Number(id));
-      router.refresh()
-    } catch (err: any) {
+      router.refresh();
+    } catch (err) {
       console.error("Failed to archive email:", err);
     } finally {
       setIsArchiving(false);
     }
   };
-
 
   return (
     <Card

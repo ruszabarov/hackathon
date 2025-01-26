@@ -27,12 +27,9 @@ import type { CalendarEventPayload } from "../../server/chat";
 import { scheduleEventAction, scheduleWithChatAction } from "~/server/actions";
 import { useState } from "react";
 
-
-
 const formSchema = z.object({
   message: z.string().min(1, "Message is required"),
 });
-
 
 type FormData = z.infer<typeof formSchema>;
 
@@ -54,10 +51,11 @@ export default function ChatBox() {
   const onSubmit = async (data: { message: string }) => {
     setIsScheduling(true);
     try {
-      const event = await scheduleWithChatAction(data.message)
+      const event = await scheduleWithChatAction(data.message);
       setSuggestedEvent(event);
       console.log("Submitted Data:", suggestedEvent);
       form.reset();
+      setDialogOpen(true);
     } catch (error) {
       console.error("Error during submission:", error);
     } finally {
@@ -135,25 +133,24 @@ export default function ChatBox() {
               </FormItem>
             )}
           />
-          <DialogTrigger asChild>
-            <Button type="submit" disabled={isScheduling}>
-              {isScheduling ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Finding time...
-                </>
-              ) : !suggestedEvent ? (
-                "Schedule with AI"
-              ) : (
-                "View Schedule"
-              )}
-            </Button>
-          </DialogTrigger>
+          <Button type="submit" disabled={isScheduling}>
+            {isScheduling ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Finding time...
+              </>
+            ) : (
+              "Schedule with AI"
+            )}
+          </Button>
         </form>
       </Form>
       <DialogContent>
         <DialogTitle>Schedule Event</DialogTitle>
-        <ScheduleEventForm onSubmit={handleScheduleSubmit} suggestedEvent={suggestedEvent} />
+        <ScheduleEventForm
+          onSubmit={handleScheduleSubmit}
+          suggestedEvent={suggestedEvent}
+        />
       </DialogContent>
     </Dialog>
   );

@@ -7,7 +7,11 @@ import { eq } from "drizzle-orm";
 import { fetchGmails, processFetchedGmails } from "./gmail";
 
 export async function fetchEmails() {
-  return await db.select().from(emails).where(eq(emails.is_archived, false)).orderBy(emails.email_time);
+  return await db
+    .select()
+    .from(emails)
+    .where(eq(emails.is_archived, false))
+    .orderBy(emails.email_time);
 }
 
 export async function fetchEmail(emailId: number) {
@@ -30,14 +34,17 @@ export async function fetchProcessAndStoreEmails() {
       summary: processed?.summary,
       priority: processed?.priority,
       title: raw?.title,
-      email_time: new Date(raw?.timestamp || new Date().toISOString()),
+      email_time: new Date(raw?.timestamp ?? new Date().toISOString()),
       originalContent: raw?.content,
     });
   }
   console.log("Successfully inserted emails into DB");
 }
 
-export async function updateEmailStatus(emailId: number, repliedStatus: string) {
+export async function updateEmailStatus(
+  emailId: number,
+  repliedStatus: string,
+) {
   await db
     .update(emails)
     .set({ replied: repliedStatus })
@@ -51,7 +58,6 @@ export async function archiveEmail(emailId: number) {
     .where(eq(emails.emailId, emailId));
 }
 
-
 export async function fetchArchivedEmails() {
   return await db
     .select()
@@ -60,15 +66,17 @@ export async function fetchArchivedEmails() {
     .orderBy(emails.email_time);
 }
 
-export async function getPreference(){
+export async function getPreference() {
   const preferenceData = await db.select().from(preference);
-  return preferenceData[0]?.summary
+  return preferenceData[0]?.summary;
 }
 
 export async function updatePreference(newPreference: string) {
   try {
     // Update the single row in the preferences table
-    await db.update(preference)
+    // eslint-disable-next-line drizzle/enforce-update-with-where
+    await db
+      .update(preference)
       .set({ summary: newPreference }) // Replace 'value' with your column name
       .execute();
     console.log("Preference updated successfully");

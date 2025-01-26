@@ -21,7 +21,7 @@ export default function RefreshButton() {
     try {
       await fetchProcessAndStoreEmails();
       router.refresh();
-    } catch (err: any) {
+    } catch (err) {
       console.error("Failed to refresh:", err);
     } finally {
       setIsRefreshing(false);

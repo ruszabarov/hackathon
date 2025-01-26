@@ -43,8 +43,12 @@ export function ReplyEmailForm({
   onSubmit,
 }: ReplyEmailFormProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const emailOnly = defaultTo.match(/<(.*)>/)?.[1] || defaultTo;
-  const nameOnly = defaultTo.match(/^(.*)</)?.[1]?.trim() || "";
+  const emailRegex = /<(.*)>/;
+  const nameRegex = /^(.*)</;
+  const emailMatch = emailRegex.exec(defaultTo);
+  const nameMatch = nameRegex.exec(defaultTo);
+  const emailOnly = emailMatch?.[1] ?? defaultTo;
+  const nameOnly = nameMatch?.[1]?.trim() ?? "";
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {

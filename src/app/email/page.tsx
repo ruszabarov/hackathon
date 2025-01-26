@@ -21,7 +21,7 @@ export default async function Emails() {
     <div className="container mx-auto p-4">
       <div className="mb-4 flex items-center justify-start">
         <RefreshButton />
-        <h2 className="text-l ml-4 font-semibold">
+        <h2 className="ml-4 text-xl font-semibold">
           Here are your latest emails, summarized and organized by priority
         </h2>
       </div>

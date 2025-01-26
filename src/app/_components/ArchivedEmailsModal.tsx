@@ -30,9 +30,13 @@ export function ArchivedEmailsModal() {
 
   useEffect(() => {
     if (isOpen) {
-      fetchArchivedEmails().then((emails) => {
-        setArchivedEmails(emails);
-      });
+      fetchArchivedEmails()
+        .then((emails) => {
+          setArchivedEmails(emails);
+        })
+        .catch((error) => {
+          console.error("Failed to fetch archived emails:", error);
+        });
     }
   }, [isOpen]);
 
@@ -45,16 +49,16 @@ export function ArchivedEmailsModal() {
         <DialogHeader>
           <DialogTitle>Archived Emails</DialogTitle>
         </DialogHeader>
-        <div className="max-h-[500px] overflow-y-auto space-y-4">
+        <div className="max-h-[500px] space-y-4 overflow-y-auto">
           {archivedEmails.map((email) => (
             <EmailSummaryCard
               key={email.emailId}
-              subject={email.title || ""}
-              content={email.summary || ""}
-              priority={email.priority || 3}
-              from={email.sender || ""}
+              subject={email.title ?? ""}
+              content={email.summary ?? ""}
+              priority={email.priority ?? 3}
+              from={email.sender ?? ""}
               id={email.emailId.toString()}
-              replied={email.replied || "No"}
+              replied={email.replied ?? "No"}
             />
           ))}
         </div>
