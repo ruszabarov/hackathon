@@ -25,6 +25,7 @@ export default async function EmailPage({
       priority={email.priority ?? 0}
       from={email.sender ?? ""}
       originalEmail={email.originalContent ?? ""}
+      replied={email.replied ?? "No"}
     />
   );
 }
