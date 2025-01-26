@@ -22,11 +22,11 @@ export const emails = createTable(
   {
     emailId: integer("email_id").primaryKey().generatedByDefaultAsIdentity(),
     sender: varchar("sender", { length: 256 }),
-    summary: varchar("summary", { length: 512 }),
+    summary: varchar("summary"),
     priority: integer("priority"),
     title: varchar("title", { length: 256 }),
     email_time: timestamp("email_time", { withTimezone: true }),
-    originalContent: varchar("originalContent", { length: 512 }),
+    originalContent: varchar("originalContent"),
   },
   (example) => ({
     priorityIndex: index("priority_idx").on(example.priority),

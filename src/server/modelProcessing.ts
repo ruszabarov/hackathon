@@ -214,7 +214,7 @@ export async function processEmail(
         Content: ${email.content}
         Timestamp: ${email.timestamp}
         
-        Please summarize the email content in one or two sentences. 
+        Please summarize the email content as concicse as possible. 
         Assign a priority (number 0 = highest, through 3 = lowest). 
         If it's purely informative/news, it gets priority 3. 
         Provide an "intention" of "Yes" or "No" to indicate 
