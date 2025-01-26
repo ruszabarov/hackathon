@@ -30,7 +30,7 @@ interface CalendarEventPayload {
 const client = new OpenAI({
   apiKey:
     "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",
-});
+ dangerouslyAllowBrowser: true});
 
 
 const CalendarEventSchema = z.object({
@@ -115,36 +115,3 @@ export async function fetchTimeFromTask(
     return undefined
   }
 }
-
-
-(async () => {
-  const sampleTask = "i want to read today";
-
-  const busyEvents = [
-    
-    {
-      "start": "2025-01-25T15:00:00-05:00",
-      "end": "2025-01-25T16:00:00-05:00",
-      "summary": "Google I/O 2015"
-    },
-    {
-      "start": "2025-01-25T20:30:00-05:00",
-      "end": "2025-01-25T21:30:00-05:00",
-      "summary": "meeting "
-    }, 
-    {
-      "start": "2025-02-25T20:30:00-05:00",
-      "end": "2025-02-25T21:30:00-05:00",
-      "summary": "meeting "
-    }
-    
-  ]
-
-
-  try {
-    const date = await fetchTimeFromTask(sampleTask, busyEvents)
-    console.log("Test suggested time", date)
-  } catch (error) {
-    console.error("Test Error:", error);
-  }
-})().catch(console.error);
