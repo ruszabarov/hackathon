@@ -30,7 +30,7 @@ export async function fetchProcessAndStoreEmails() {
       summary: processed?.summary,
       priority: processed?.priority,
       title: raw?.title,
-      email_time: new Date(raw?.timestamp || Date.now()),
+      email_time: new Date(raw?.timestamp ?? Date.now()),
       originalContent: raw?.content,
     });
   }

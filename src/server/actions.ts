@@ -1,6 +1,7 @@
 "use server";
 
-import { replyWithAI } from "./modelProcessing";
+import { fetchEvents } from "./googleCalendar";
+import { fetchTimeFromEmail, replyWithAI } from "./modelProcessing";
 
 export interface ReplyWithAIResponse {
   success: boolean;
@@ -36,4 +37,20 @@ export async function replyWithAIAction(
       error: "Failed to generate reply",
     };
   }
+}
+
+export async function scheduleWithAIAction(
+  id: string,
+  title: string,
+  sender: string,
+  content: string,
+  timestamp: string,
+) {
+  const busyEvents = await fetchEvents();
+  const suggestedEvent = await fetchTimeFromEmail(
+    { id, title, sender, content, timestamp },
+    busyEvents,
+  );
+
+  return suggestedEvent;
 }

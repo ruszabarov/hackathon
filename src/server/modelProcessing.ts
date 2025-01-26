@@ -1,8 +1,11 @@
+"use server";
+
 import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { getPreference } from "./queries";
 import type { BusyEvent } from "./googleCalendar";
 import { z } from "zod";
+import { CalendarEventPayload } from "./chat";
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -25,20 +28,6 @@ export interface ProcessedEmailPayload {
 interface replyEmailPayload {
   title: string;
   reply: string;
-}
-
-interface CalendarEventPayload {
-  summary: string;
-  description: string;
-  start: {
-    dateTime: string;
-    timeZone: string;
-  };
-  end: {
-    dateTime: string;
-    timeZone: string;
-  };
-  attendees?: Array<{ email: string }>;
 }
 
 const ProcessedEmailSchema = z.object({
@@ -77,7 +66,7 @@ export async function fetchTimeFromEmail(
   busyEvents: BusyEvent[],
 ): Promise<CalendarEventPayload | undefined> {
   try {
-    const preference = await getPreference()
+    const preference = await getPreference();
     // System prompt: instruct the model exactly how to respond
     const systemMessage = {
       role: "system" as const,
@@ -148,7 +137,7 @@ export async function replyWithAI(
   query: string,
 ): Promise<replyEmailPayload> {
   try {
-    const preference = await getPreference()
+    const preference = await getPreference();
     const systemMessage = {
       role: "system" as const,
       content: `
@@ -198,7 +187,7 @@ export async function processEmail(
   email: EmailPayload,
 ): Promise<ProcessedEmailPayload> {
   try {
-    const preference = await getPreference()
+    const preference = await getPreference();
     // Our system instructions: model must return only JSON with specific keys.
     const systemMessage = {
       role: "system" as const,

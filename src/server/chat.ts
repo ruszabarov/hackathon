@@ -3,16 +3,15 @@ import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
 import { getPreference } from "./queries";
 
-
 console.log(process.env.OPENAI_API_KEY);
 
 interface BusyEvent {
   start: string;
-  end: string;  
+  end: string;
   summary: string;
 }
 
-interface CalendarEventPayload {
+export interface CalendarEventPayload {
   summary: string;
   description: string;
   start: {
@@ -26,13 +25,11 @@ interface CalendarEventPayload {
   attendees?: Array<{ email: string }>;
 }
 
-
-
 const client = new OpenAI({
   apiKey:
     "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",
- dangerouslyAllowBrowser: true});
-
+  dangerouslyAllowBrowser: true,
+});
 
 const CalendarEventSchema = z.object({
   summary: z.string(),
@@ -76,7 +73,7 @@ export async function fetchTimeFromTask(
         - If a relevant "preference" is provided, customize the result to align with that preference.
       `,
     };
-    console.log(systemMessage)
+    console.log(systemMessage);
 
     // User prompt: includes the raw email
     const userMessage = {
@@ -94,10 +91,10 @@ export async function fetchTimeFromTask(
       Please return only a single JSON object matching the schema above and nothing else.
       `,
     };
-    console.log(userMessage)
+    console.log(userMessage);
 
     const completion = await client.beta.chat.completions.parse({
-      model: "gpt-4o-mini", 
+      model: "gpt-4o-mini",
       messages: [systemMessage, userMessage],
       response_format: zodResponseFormat(CalendarEventSchema, "calendar_event"),
     });
@@ -108,10 +105,8 @@ export async function fetchTimeFromTask(
       throw new Error("No parsed data returned by the model.");
     }
 
-    
     const proposedStart = new Date(proposedEvent.start.dateTime);
     const proposedEnd = new Date(proposedEvent.end.dateTime);
-
 
     proposedEvent.start.dateTime = proposedStart.toISOString();
     proposedEvent.end.dateTime = proposedEnd.toISOString();
@@ -119,6 +114,6 @@ export async function fetchTimeFromTask(
     return proposedEvent;
   } catch (error) {
     console.error("Error fetching time from task:", error);
-    return undefined
+    return undefined;
   }
 }
