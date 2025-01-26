@@ -27,12 +27,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@components/ui/popover";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { cn } from "@lib/utils";
 import { format } from "date-fns";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
-const formSchema = z
+export const formSchema = z
   .object({
     title: z.string().min(1, { message: "Title is required" }),
     description: z.string().min(1, { message: "Description is required" }),

@@ -26,7 +26,7 @@ export default async function EmailPage({
       from={email.sender ?? ""}
       originalEmail={email.originalContent ?? ""}
       email_time={email.email_time ?? new Date()}
-      replied={(email.replied as string) ?? "No"}
+      replied={email.replied ?? "No"}
     />
   );
 }

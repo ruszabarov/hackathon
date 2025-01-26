@@ -1,6 +1,6 @@
 "use server";
 
-import { fetchEvents } from "./googleCalendar";
+import { fetchEvents, scheduleEvent } from "./googleCalendar";
 import { fetchTimeFromEmail, replyWithAI } from "./modelProcessing";
 
 export interface ReplyWithAIResponse {
@@ -53,4 +53,27 @@ export async function scheduleWithAIAction(
   );
 
   return suggestedEvent;
+}
+
+export async function scheduleEventAction(event: {
+  summary: string;
+  description: string;
+  start: {
+    dateTime: string;
+    timeZone: string;
+  };
+  end: {
+    dateTime: string;
+    timeZone: string;
+  };
+  location: string;
+  attendees: { email: string }[];
+}) {
+  try {
+    const result = await scheduleEvent(event);
+    return { success: true, event: result };
+  } catch (error) {
+    console.error("Error scheduling event:", error);
+    return { success: false, error: "Failed to schedule event" };
+  }
 }

@@ -5,7 +5,7 @@ import { zodResponseFormat } from "openai/helpers/zod";
 import { getPreference } from "./queries";
 import type { BusyEvent } from "./googleCalendar";
 import { z } from "zod";
-import { CalendarEventPayload } from "./chat";
+import type { CalendarEventPayload } from "./chat";
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,

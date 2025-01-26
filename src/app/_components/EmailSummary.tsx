@@ -19,9 +19,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@components/ui/dialog";
-import { ReplyEmailForm, type formSchema } from "./ReplyEmailForm";
-import { ScheduleEventForm } from "./ScheduleEventForm";
-import { useState, useEffect } from "react";
+import {
+  ReplyEmailForm,
+  type formSchema as replyEmailFormSchema,
+} from "./ReplyEmailForm";
+import {
+  ScheduleEventForm,
+  type formSchema as scheduleEventFormSchema,
+} from "./ScheduleEventForm";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Tooltip,
@@ -32,8 +38,12 @@ import {
 import type { z } from "zod";
 import { sendEmail } from "../../server/gmail";
 import { updateEmailStatus } from "~/server/queries";
-import { scheduleWithAIAction } from "../../server/actions";
-import { CalendarEventPayload } from "../../server/chat";
+import {
+  scheduleWithAIAction,
+  scheduleEventAction,
+} from "../../server/actions";
+import type { CalendarEventPayload } from "../../server/chat";
+
 interface EmailSummaryProps {
   subject: string;
   content: string;
@@ -77,7 +87,9 @@ export function EmailSummary({
   >(undefined);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const handleReplySubmit = async (values: z.infer<typeof formSchema>) => {
+  const handleReplySubmit = async (
+    values: z.infer<typeof replyEmailFormSchema>,
+  ) => {
     const { to, subject, originalContent } = values;
 
     try {
@@ -119,9 +131,55 @@ export function EmailSummary({
     }
   };
 
-  const handleScheduleSubmit = async () => {
-    // TODO: Implement event scheduling logic
-    console.log("Scheduling event:", suggestedEvent);
+  const handleScheduleSubmit = async (
+    values: z.infer<typeof scheduleEventFormSchema>,
+  ) => {
+    const startDateTime = new Date(values.startDate);
+    startDateTime.setHours(
+      values.startPeriod === "PM" && values.startHour !== 12
+        ? values.startHour + 12
+        : values.startPeriod === "AM" && values.startHour === 12
+          ? 0
+          : values.startHour,
+      values.startMinute,
+    );
+
+    const endDateTime = new Date(values.endDate);
+    endDateTime.setHours(
+      values.endPeriod === "PM" && values.endHour !== 12
+        ? values.endHour + 12
+        : values.endPeriod === "AM" && values.endHour === 12
+          ? 0
+          : values.endHour,
+      values.endMinute,
+    );
+
+    const calendarEvent = {
+      summary: values.title,
+      description: values.description,
+      start: {
+        dateTime: startDateTime.toISOString(),
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      },
+      end: {
+        dateTime: endDateTime.toISOString(),
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      },
+      location: values.location,
+      attendees: values.attendees.map((email) => ({ email })),
+    };
+
+    try {
+      const result = await scheduleEventAction(calendarEvent);
+      if (result.success) {
+        setDialogOpen(false);
+        router.refresh();
+      } else {
+        console.error("Failed to schedule event:", result.error);
+      }
+    } catch (error) {
+      console.error("Error scheduling event:", error);
+    }
   };
 
   return (
