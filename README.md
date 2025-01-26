@@ -1,29 +1,108 @@
-# Create T3 App
+# Monay Productivity
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+A modern productivity suite that combines email management, smart calendar scheduling, and AI-powered features to streamline your workflow.
 
-## What's next? How do I make an app with this?
+## Features
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+### 📧 Smart Email Management
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+- Automatic email summarization and prioritization
+- AI-powered email response suggestions
+- Email archiving and organization
+- Priority-based inbox view
+- Visual indicators for replied and priority status
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+### 📅 Intelligent Calendar Integration
 
-## Learn More
+- AI-powered event scheduling from emails
+- Smart scheduling based on busy times and preferences
+- Natural language event creation
+- Google Calendar integration
+- Timezone-aware scheduling
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+### 🤖 AI Assistant Features
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+- Natural language task scheduling
+- Smart reply generation
+- Automated event detail extraction from emails
+- Context-aware scheduling suggestions
+- User preference-based customization
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+## Tech Stack
 
-## How do I deploy this?
+- **Frontend**: Next.js, TypeScript, React
+- **UI Components**: Shadcn UI
+- **Authentication**: Clerk
+- **AI Integration**: OpenAI GPT-4
+- **APIs**: Google Gmail, Google Calendar
+- **State Management**: React Hook Form, Zod
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+## Getting Started
+
+### Prerequisites
+
+- Node.js
+- npm or yarn
+- Google Cloud Platform account
+- OpenAI API key
+- Clerk account
+
+### Environment Setup
+
+Create a `.env` file with the following variables:
+
+```env
+OPENAI_API_KEY=your_openai_api_key
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+CLERK_SECRET_KEY=your_clerk_secret_key
+CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+```
+
+### Installation
+
+1. Clone the repository
+
+2. Install dependencies
+
+```bash
+npm install
+# or
+yarn install
+```
+
+3. Run the development server
+
+```bash
+npm run dev
+# or
+yarn dev
+```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
+
+## Usage
+
+1. **Email Management**
+
+   - View your inbox with AI-generated summaries
+   - Emails are automatically prioritized
+   - Click on an email to view details and take actions
+   - Archive or reply to emails with AI assistance
+
+2. **Calendar Scheduling**
+
+   - Use natural language to create events
+   - Schedule events directly from emails
+   - AI will suggest optimal times based on your calendar
+   - Manage attendees and event details
+
+3. **AI Features**
+   - Type natural language commands to schedule events
+   - Get AI-powered email reply suggestions
+   - Automatic event detail extraction from emails
+   - Smart scheduling based on preferences
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
