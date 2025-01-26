@@ -1,7 +1,9 @@
 "use server";
 
+import { overrides } from ".eslintrc.cjs";
 import { fetchEvents, scheduleEvent } from "./googleCalendar";
 import { fetchTimeFromEmail, replyWithAI } from "./modelProcessing";
+import { fetchTimeFromTask } from "./chat";
 
 export interface ReplyWithAIResponse {
   success: boolean;
@@ -53,6 +55,12 @@ export async function scheduleWithAIAction(
   );
 
   return suggestedEvent;
+}
+
+export async function scheduleWithChatAction(summary: string){
+  const busyEvents = await fetchEvents();
+  const suggestedEvent = await fetchTimeFromTask(summary, busyEvents); 
+  return suggestedEvent
 }
 
 export async function scheduleEventAction(event: {

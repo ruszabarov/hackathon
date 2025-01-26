@@ -2,14 +2,9 @@ import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
 import { getPreference } from "./queries";
+import type { BusyEvent } from "./googleCalendar";
 
 console.log(process.env.OPENAI_API_KEY);
-
-interface BusyEvent {
-  start: string;
-  end: string;
-  summary: string;
-}
 
 export interface CalendarEventPayload {
   summary: string;
