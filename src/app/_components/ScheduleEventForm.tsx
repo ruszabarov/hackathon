@@ -1,3 +1,5 @@
+"use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -28,26 +30,31 @@ import {
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@lib/utils";
 import { format } from "date-fns";
+import { useEffect } from "react";
 
-const formSchema = z
+export const formSchema = z
   .object({
     title: z.string().min(1, { message: "Title is required" }),
     description: z.string().min(1, { message: "Description is required" }),
     startDate: z.date(),
     startHour: z
-      .string()
-      .regex(/^(0?[1-9]|1[0-2])$/, { message: "Hour must be between 1-12" }),
+      .number()
+      .min(1, { message: "Hour must be between 1-12" })
+      .max(12, { message: "Hour must be between 1-12" }),
     startMinute: z
-      .string()
-      .regex(/^([0-5]?[0-9])$/, { message: "Minute must be between 0-59" }),
+      .number()
+      .min(0, { message: "Minute must be between 0-59" })
+      .max(59, { message: "Minute must be between 0-59" }),
     startPeriod: z.enum(["AM", "PM"]),
     endDate: z.date(),
     endHour: z
-      .string()
-      .regex(/^(0?[1-9]|1[0-2])$/, { message: "Hour must be between 1-12" }),
+      .number()
+      .min(1, { message: "Hour must be between 1-12" })
+      .max(12, { message: "Hour must be between 1-12" }),
     endMinute: z
-      .string()
-      .regex(/^([0-5]?[0-9])$/, { message: "Minute must be between 0-59" }),
+      .number()
+      .min(0, { message: "Minute must be between 0-59" })
+      .max(59, { message: "Minute must be between 0-59" }),
     endPeriod: z.enum(["AM", "PM"]),
     location: z.string(),
     attendees: z.array(
@@ -59,12 +66,12 @@ const formSchema = z
       const now = new Date();
       const startDateTime = new Date(data.startDate);
       startDateTime.setHours(
-        data.startPeriod === "PM" && data.startHour !== "12"
-          ? parseInt(data.startHour) + 12
-          : data.startPeriod === "AM" && data.startHour === "12"
+        data.startPeriod === "PM" && data.startHour !== 12
+          ? data.startHour + 12
+          : data.startPeriod === "AM" && data.startHour === 12
             ? 0
-            : parseInt(data.startHour),
-        parseInt(data.startMinute),
+            : data.startHour,
+        data.startMinute,
       );
 
       return startDateTime > now;
@@ -80,21 +87,21 @@ const formSchema = z
       const endDateTime = new Date(data.endDate);
 
       startDateTime.setHours(
-        data.startPeriod === "PM" && data.startHour !== "12"
-          ? parseInt(data.startHour) + 12
-          : data.startPeriod === "AM" && data.startHour === "12"
+        data.startPeriod === "PM" && data.startHour !== 12
+          ? data.startHour + 12
+          : data.startPeriod === "AM" && data.startHour === 12
             ? 0
-            : parseInt(data.startHour),
-        parseInt(data.startMinute),
+            : data.startHour,
+        data.startMinute,
       );
 
       endDateTime.setHours(
-        data.endPeriod === "PM" && data.endHour !== "12"
-          ? parseInt(data.endHour) + 12
-          : data.endPeriod === "AM" && data.endHour === "12"
+        data.endPeriod === "PM" && data.endHour !== 12
+          ? data.endHour + 12
+          : data.endPeriod === "AM" && data.endHour === 12
             ? 0
-            : parseInt(data.endHour),
-        parseInt(data.endMinute),
+            : data.endHour,
+        data.endMinute,
       );
 
       return endDateTime > startDateTime;
@@ -107,26 +114,96 @@ const formSchema = z
 
 interface ScheduleEventFormProps {
   onSubmit: (values: z.infer<typeof formSchema>) => void;
+  isLoading?: boolean;
+  email?: {
+    id: string;
+    subject: string;
+    content: string;
+    from: string;
+    originalEmail: string;
+    email_time: Date;
+  };
+  suggestedEvent?: {
+    summary: string;
+    description: string;
+    start: {
+      dateTime: string;
+      timeZone: string;
+    };
+    end: {
+      dateTime: string;
+      timeZone: string;
+    };
+    attendees?: Array<{ email: string }>;
+  };
 }
 
-export function ScheduleEventForm({ onSubmit }: ScheduleEventFormProps) {
+export function ScheduleEventForm({
+  onSubmit,
+  email,
+  suggestedEvent,
+}: ScheduleEventFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      startDate: new Date(),
-      startHour: "12",
-      startMinute: "00",
-      startPeriod: "PM",
-      endDate: new Date(),
-      endHour: "1",
-      endMinute: "00",
-      endPeriod: "PM",
+      title: suggestedEvent?.summary ?? "",
+      description: suggestedEvent?.description ?? "",
+      startDate: suggestedEvent?.start
+        ? new Date(suggestedEvent.start.dateTime)
+        : new Date(),
+      startHour: suggestedEvent?.start
+        ? new Date(suggestedEvent.start.dateTime).getHours() % 12 || 12
+        : 12,
+      startMinute: suggestedEvent?.start
+        ? new Date(suggestedEvent.start.dateTime).getMinutes()
+        : 0,
+      startPeriod: suggestedEvent?.start
+        ? new Date(suggestedEvent.start.dateTime).getHours() >= 12
+          ? "PM"
+          : "AM"
+        : "PM",
+      endDate: suggestedEvent?.end
+        ? new Date(suggestedEvent.end.dateTime)
+        : new Date(),
+      endHour: suggestedEvent?.end
+        ? new Date(suggestedEvent.end.dateTime).getHours() % 12 || 12
+        : 1,
+      endMinute: suggestedEvent?.end
+        ? new Date(suggestedEvent.end.dateTime).getMinutes()
+        : 0,
+      endPeriod: suggestedEvent?.end
+        ? new Date(suggestedEvent.end.dateTime).getHours() >= 12
+          ? "PM"
+          : "AM"
+        : "PM",
       location: "",
-      attendees: [],
+      attendees: suggestedEvent?.attendees?.map((a) => a.email) ?? [],
     },
   });
+
+  useEffect(() => {
+    if (suggestedEvent) {
+      form.reset({
+        title: suggestedEvent.summary,
+        description: suggestedEvent.description,
+        startDate: new Date(suggestedEvent.start.dateTime),
+        startHour:
+          new Date(suggestedEvent.start.dateTime).getHours() % 12 || 12,
+        startMinute: new Date(suggestedEvent.start.dateTime).getMinutes(),
+        startPeriod:
+          new Date(suggestedEvent.start.dateTime).getHours() >= 12
+            ? "PM"
+            : "AM",
+        endDate: new Date(suggestedEvent.end.dateTime),
+        endHour: new Date(suggestedEvent.end.dateTime).getHours() % 12 || 12,
+        endMinute: new Date(suggestedEvent.end.dateTime).getMinutes(),
+        endPeriod:
+          new Date(suggestedEvent.end.dateTime).getHours() >= 12 ? "PM" : "AM",
+        location: "",
+        attendees: suggestedEvent.attendees?.map((a) => a.email) ?? [],
+      });
+    }
+  }, [suggestedEvent, form]);
 
   return (
     <Form {...form}>

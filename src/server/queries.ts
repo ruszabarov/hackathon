@@ -2,6 +2,7 @@
 
 import { db } from "./db";
 import { emails } from "./db/schema";
+import { preference } from "./db/schema";
 import { eq } from "drizzle-orm";
 import { fetchGmails, processFetchedGmails } from "./gmail";
 
@@ -57,4 +58,22 @@ export async function fetchArchivedEmails() {
     .from(emails)
     .where(eq(emails.is_archived, true))
     .orderBy(emails.email_time);
+}
+
+export async function getPreference(){
+  const preferenceData = await db.select().from(preference);
+  return preferenceData[0]?.summary
+}
+
+export async function updatePreference(newPreference: string) {
+  try {
+    // Update the single row in the preferences table
+    await db.update(preference)
+      .set({ summary: newPreference }) // Replace 'value' with your column name
+      .execute();
+    console.log("Preference updated successfully");
+  } catch (error) {
+    console.error("Error updating preference:", error);
+    throw error;
+  }
 }

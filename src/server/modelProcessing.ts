@@ -1,6 +1,11 @@
+"use server";
+
 import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
+import { getPreference } from "./queries";
+import type { BusyEvent } from "./googleCalendar";
 import { z } from "zod";
+import type { CalendarEventPayload } from "./chat";
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -23,26 +28,6 @@ export interface ProcessedEmailPayload {
 interface replyEmailPayload {
   title: string;
   reply: string;
-}
-
-interface BusyEvent {
-  start: string; // e.g. 2025-01-25T15:00:00-05:00
-  end: string; // e.g. 2025-01-25T16:00:00-05:00
-  summary: string;
-}
-
-interface CalendarEventPayload {
-  summary: string;
-  description: string;
-  start: {
-    dateTime: string;
-    timeZone: string;
-  };
-  end: {
-    dateTime: string;
-    timeZone: string;
-  };
-  attendees?: Array<{ email: string }>;
 }
 
 const ProcessedEmailSchema = z.object({
@@ -81,6 +66,7 @@ export async function fetchTimeFromEmail(
   busyEvents: BusyEvent[],
 ): Promise<CalendarEventPayload | undefined> {
   try {
+    const preference = await getPreference();
     // System prompt: instruct the model exactly how to respond
     const systemMessage = {
       role: "system" as const,
@@ -94,6 +80,7 @@ export async function fetchTimeFromEmail(
         - "summary" should be no longer than 120 characters.
         - "timezone" should be determined based on the email or busy events. If not specified, default to "UTC". 
         - "description" is optional but can include extra context (like the original email text or a short summary).
+        - If a relevant "preference" is provided, customize the result to align with that preference.
       `,
     };
     console.log(systemMessage);
@@ -108,6 +95,9 @@ export async function fetchTimeFromEmail(
       Sender: ${email.sender}
       Content: ${email.content}
       Timestamp: ${email.timestamp}
+
+      Here is the preference string: 
+      ${preference?.length ? preference : "no preference"}
 
       Please return only a single JSON object matching the schema above and nothing else.
       `,
@@ -147,12 +137,15 @@ export async function replyWithAI(
   query: string,
 ): Promise<replyEmailPayload> {
   try {
+    const preference = await getPreference();
     const systemMessage = {
       role: "system" as const,
       content: `
-        You are an AI assistant that drafts professional email replies. The email details will be provided as user content.
-        Craft a polite and clear response and appropriate title based on the query and the provided email context. Your name is Khoa. 
+        You are an AI assistant that drafts email replies. The email details will be provided as user content.
+        Craft a clear and appropriate response and appropriate title based on the query and the provided email context. 
+        If a relevant "preference" is provided, customize the result to align with that preference.
         Users query: ${query}
+        User preference: ${preference?.length ? preference : "no preference"}
       `,
     };
 
@@ -194,12 +187,14 @@ export async function processEmail(
   email: EmailPayload,
 ): Promise<ProcessedEmailPayload> {
   try {
+    const preference = await getPreference();
     // Our system instructions: model must return only JSON with specific keys.
     const systemMessage = {
       role: "system" as const,
       content: `
         You are an assistant that extracts a short summary, a numeric priority, 
         and an intention from an email. The email will be provided as user content. 
+        If a "preference" is provided, customize the result to align with that preference.
         Return a JSON object with "summary", "priority", and "intention" only.
       `,
     };
@@ -214,6 +209,8 @@ export async function processEmail(
         Content: ${email.content}
         Timestamp: ${email.timestamp}
         
+        User Preference:  ${preference?.length ? preference : "no preference"}
+
         Please summarize the email content as concicse as possible. 
         Assign a priority (number 0 = highest, through 3 = lowest). 
         If it's purely informative/news, it gets priority 3. 

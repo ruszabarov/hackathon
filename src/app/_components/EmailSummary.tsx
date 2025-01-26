@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, Check, Loader2 } from "lucide-react";
 import { Button } from "@components/ui/button";
 import {
   Card,
@@ -19,8 +19,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@components/ui/dialog";
-import { ReplyEmailForm, type formSchema } from "./ReplyEmailForm";
-import { ScheduleEventForm } from "./ScheduleEventForm";
+import {
+  ReplyEmailForm,
+  type formSchema as replyEmailFormSchema,
+} from "./ReplyEmailForm";
+import {
+  ScheduleEventForm,
+  type formSchema as scheduleEventFormSchema,
+} from "./ScheduleEventForm";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -30,9 +36,13 @@ import {
   TooltipTrigger,
 } from "@components/ui/tooltip";
 import type { z } from "zod";
-import { sendEmail } from "../../server/gmail"
-import { or } from "drizzle-orm";
+import { sendEmail } from "../../server/gmail";
 import { updateEmailStatus } from "~/server/queries";
+import {
+  scheduleWithAIAction,
+  scheduleEventAction,
+} from "../../server/actions";
+import type { CalendarEventPayload } from "../../server/chat";
 
 interface EmailSummaryProps {
   subject: string;
@@ -41,8 +51,9 @@ interface EmailSummaryProps {
   from: string;
   id: string;
   originalEmail: string;
-  replied: string,
-  }
+  replied: string;
+  email_time: Date;
+}
 
 const priorityColorMap = {
   [3]: "bg-secondary",
@@ -65,22 +76,29 @@ export function EmailSummary({
   from,
   id,
   originalEmail,
+  email_time,
   replied,
-  }: EmailSummaryProps) {
+}: EmailSummaryProps) {
   const router = useRouter();
   const [showOriginal, setShowOriginal] = useState(false);
+  const [isScheduling, setIsScheduling] = useState(false);
+  const [suggestedEvent, setSuggestedEvent] = useState<
+    CalendarEventPayload | undefined
+  >(undefined);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
-  const handleReplySubmit = async (values: z.infer<typeof formSchema>) => {
+  const handleReplySubmit = async (
+    values: z.infer<typeof replyEmailFormSchema>,
+  ) => {
     const { to, subject, originalContent } = values;
-  
+
     try {
-      
       const response = await sendEmail(to, subject, originalContent);
-  
+
       if (response) {
         console.log("Email sent successfully!");
         await updateEmailStatus(Number(id), "Yes");
-        router.back()
+        router.back();
       } else {
         console.error("Failed to send email");
       }
@@ -89,9 +107,79 @@ export function EmailSummary({
     }
   };
 
-  const handleScheduleSubmit = async () => {
-    // TODO: Implement event scheduling logic
-    console.log("Scheduling event:");
+  const handleScheduleClick = async () => {
+    if (suggestedEvent) {
+      setDialogOpen(true);
+      return;
+    }
+
+    setIsScheduling(true);
+    try {
+      const event = await scheduleWithAIAction(
+        id,
+        subject,
+        from,
+        originalEmail,
+        email_time.toISOString(),
+      );
+      setSuggestedEvent(event);
+      setDialogOpen(true);
+    } catch (error) {
+      console.error("Error scheduling event:", error);
+    } finally {
+      setIsScheduling(false);
+    }
+  };
+
+  const handleScheduleSubmit = async (
+    values: z.infer<typeof scheduleEventFormSchema>,
+  ) => {
+    const startDateTime = new Date(values.startDate);
+    startDateTime.setHours(
+      values.startPeriod === "PM" && values.startHour !== 12
+        ? values.startHour + 12
+        : values.startPeriod === "AM" && values.startHour === 12
+          ? 0
+          : values.startHour,
+      values.startMinute,
+    );
+
+    const endDateTime = new Date(values.endDate);
+    endDateTime.setHours(
+      values.endPeriod === "PM" && values.endHour !== 12
+        ? values.endHour + 12
+        : values.endPeriod === "AM" && values.endHour === 12
+          ? 0
+          : values.endHour,
+      values.endMinute,
+    );
+
+    const calendarEvent = {
+      summary: values.title,
+      description: values.description,
+      start: {
+        dateTime: startDateTime.toISOString(),
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      },
+      end: {
+        dateTime: endDateTime.toISOString(),
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      },
+      location: values.location,
+      attendees: values.attendees.map((email) => ({ email })),
+    };
+
+    try {
+      const result = await scheduleEventAction(calendarEvent);
+      if (result.success) {
+        setDialogOpen(false);
+        router.refresh();
+      } else {
+        console.error("Failed to schedule event:", result.error);
+      }
+    } catch (error) {
+      console.error("Error scheduling event:", error);
+    }
   };
 
   return (
@@ -106,19 +194,22 @@ export function EmailSummary({
       <Card className="relative">
         <TooltipProvider>
           <Tooltip>
-          <TooltipTrigger asChild>
-          <div className="absolute top-3 right-3 flex items-center space-x-1">
-            {replied === "Yes" && (
-              <Check className="h-4 w-4 text-green-500" aria-hidden="true" />
-            )}
-            <div
-              className={cn(
-                "h-4 w-4 rounded-full",
-                priorityColorMap[priority as keyof typeof priorityColorMap]
-              )}
-            />
-          </div>
-          </TooltipTrigger>
+            <TooltipTrigger asChild>
+              <div className="absolute right-3 top-3 flex items-center space-x-1">
+                {replied === "Yes" && (
+                  <Check
+                    className="h-4 w-4 text-green-500"
+                    aria-hidden="true"
+                  />
+                )}
+                <div
+                  className={cn(
+                    "h-4 w-4 rounded-full",
+                    priorityColorMap[priority as keyof typeof priorityColorMap],
+                  )}
+                />
+              </div>
+            </TooltipTrigger>
             <TooltipContent>
               <p>
                 {priorityLabels[priority as keyof typeof priorityLabels] ??
@@ -168,20 +259,40 @@ export function EmailSummary({
                 />
               </DialogContent>
             </Dialog>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="w-full rounded-none border-r"
-                >
-                  Schedule with AI
-                </Button>
-              </DialogTrigger>
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <Button
+                variant="ghost"
+                className="w-full rounded-none border-r"
+                onClick={handleScheduleClick}
+                disabled={isScheduling}
+              >
+                {isScheduling ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Finding time...
+                  </>
+                ) : !suggestedEvent ? (
+                  "Schedule with AI"
+                ) : (
+                  "View Schedule"
+                )}
+              </Button>
               <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>
                   <DialogTitle>Schedule Event</DialogTitle>
                 </DialogHeader>
-                <ScheduleEventForm onSubmit={handleScheduleSubmit} />
+                <ScheduleEventForm
+                  onSubmit={handleScheduleSubmit}
+                  email={{
+                    id,
+                    subject,
+                    content,
+                    from,
+                    originalEmail,
+                    email_time,
+                  }}
+                  suggestedEvent={suggestedEvent}
+                />
               </DialogContent>
             </Dialog>
             <Button

@@ -42,3 +42,4 @@ export const preference = createTable(
     summary: varchar("summary", { length: 256 }),
   },
 );
+

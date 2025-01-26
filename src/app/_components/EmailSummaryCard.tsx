@@ -20,7 +20,7 @@ interface EmailSummaryProps {
   priority: number;
   from: string;
   id: string;
-  replied: string; 
+  replied: string;
 }
 
 const priorityColorMap = {
@@ -63,14 +63,18 @@ export function EmailSummaryCard({
       onClick={handleClick}
       className="group relative transform cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-lg"
     >
-      <div className="absolute top-3 right-3 flex items-center space-x-1">
+      <div className="absolute right-3 top-3 flex items-center space-x-1">
         {replied === "Yes" && (
-          <Check strokeWidth={3} className="h-4 w-4 text-green-500" aria-hidden="true" />
+          <Check
+            strokeWidth={3}
+            className="h-4 w-4 text-green-500"
+            aria-hidden="true"
+          />
         )}
         <div
           className={cn(
             "h-4 w-4 rounded-full",
-            priorityColorMap[priority as keyof typeof priorityColorMap]
+            priorityColorMap[priority as keyof typeof priorityColorMap],
           )}
         />
       </div>
