@@ -13,6 +13,7 @@ import {
 import { SignInButton, UserButton } from "@clerk/nextjs";
 import { SignedOut } from "@clerk/nextjs";
 import { SignedIn } from "@clerk/nextjs";
+import { ArchivedEmailsModal } from "./ArchivedEmailsModal";
 
 const TopNav = () => {
   const { setTheme } = useTheme();
@@ -39,6 +40,7 @@ const TopNav = () => {
         </div>
       </div>
       <div className="flex items-center gap-4">
+        <ArchivedEmailsModal />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="icon">

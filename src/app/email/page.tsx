@@ -55,6 +55,7 @@ export default async function Emails() {
                 content={email.summary ?? ""}
                 priority={email.priority ?? 0}
                 from={email.sender ?? ""}
+                replied={email.replied ?? "No"}
               />
             ))}
           </div>

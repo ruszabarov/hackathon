@@ -2,6 +2,7 @@
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
 import {
+  boolean,
   index,
   integer,
   pgTableCreator,
@@ -28,8 +29,16 @@ export const emails = createTable(
     email_time: timestamp("email_time", { withTimezone: true }),
     originalContent: varchar("originalContent"),
     replied: varchar("replied", { length: 3 }).default("No"),
+    is_archived: boolean("is_archived").default(false), 
   },
   (example) => ({
     priorityIndex: index("priority_idx").on(example.priority),
   }),
+);
+
+export const preference = createTable(
+  "preference",
+  {
+    summary: varchar("summary", { length: 256 }),
+  },
 );

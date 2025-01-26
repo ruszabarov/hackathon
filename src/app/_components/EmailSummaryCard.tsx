@@ -7,9 +7,12 @@ import {
   CardTitle,
   CardDescription,
 } from "@components/ui/card";
+import { useState } from "react";
 import { cn } from "../../lib/utils";
 import { useRouter } from "next/navigation";
-import { Check } from "lucide-react";
+import { Check, Archive } from "lucide-react";
+import ArchiveButton from "./ArchiveButton";
+import { archiveEmail} from "../../server/queries"
 
 interface EmailSummaryProps {
   subject: string;
@@ -36,12 +39,23 @@ export function EmailSummaryCard({
   replied,
 }: EmailSummaryProps) {
   const router = useRouter();
+  const [isArchiving, setIsArchiving] = useState(false);
 
   const handleClick = () => {
     router.push(`/email/${id}`);
   };
 
-  console.log(replied)
+  const handleArchive = async () => {
+    setIsArchiving(true);
+    try {
+      await archiveEmail(Number(id));
+      router.refresh()
+    } catch (err: any) {
+      console.error("Failed to archive email:", err);
+    } finally {
+      setIsArchiving(false);
+    }
+  };
 
 
   return (
@@ -67,6 +81,7 @@ export function EmailSummaryCard({
       <CardContent>
         <p className="text-sm text-muted-foreground">{content}</p>
       </CardContent>
+      <ArchiveButton onArchive={handleArchive} isArchiving={isArchiving} />
     </Card>
   );
 }

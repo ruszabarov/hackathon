@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm";
 import { fetchGmails, processFetchedGmails } from "./gmail";
 
 export async function fetchEmails() {
-  return await db.select().from(emails).orderBy(emails.email_time);
+  return await db.select().from(emails).where(eq(emails.is_archived, false)).orderBy(emails.email_time);
 }
 
 export async function fetchEmail(emailId: number) {
@@ -29,7 +29,7 @@ export async function fetchProcessAndStoreEmails() {
       summary: processed?.summary,
       priority: processed?.priority,
       title: raw?.title,
-      email_time: new Date(raw?.timestamp || Date.now()),
+      email_time: new Date(raw?.timestamp || new Date().toISOString()),
       originalContent: raw?.content,
     });
   }
@@ -41,4 +41,20 @@ export async function updateEmailStatus(emailId: number, repliedStatus: string) 
     .update(emails)
     .set({ replied: repliedStatus })
     .where(eq(emails.emailId, emailId));
+}
+
+export async function archiveEmail(emailId: number) {
+  await db
+    .update(emails)
+    .set({ is_archived: true })
+    .where(eq(emails.emailId, emailId));
+}
+
+
+export async function fetchArchivedEmails() {
+  return await db
+    .select()
+    .from(emails)
+    .where(eq(emails.is_archived, true))
+    .orderBy(emails.email_time);
 }
