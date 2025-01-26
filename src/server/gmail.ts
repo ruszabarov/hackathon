@@ -106,7 +106,6 @@ export async function processFetchedGmails(
     throw error;
   }
 }
-<<<<<<< HEAD
 
 export async function sendEmail(to: string, subject: string, body: string) {
   const { userId } = await auth();
@@ -153,6 +152,3 @@ export async function sendEmail(to: string, subject: string, body: string) {
     throw error;
   }
 }
-
-=======
->>>>>>> 4bbf861e004ea027445c0dde9fac416ece4dcc12
