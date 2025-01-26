@@ -22,7 +22,7 @@ import { ArrowRight, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { replyWithAIAction } from "~/server/actions";
 
-const formSchema = z.object({
+export const formSchema = z.object({
   to: z.string().email({ message: "Please enter a valid email address" }),
   subject: z.string().min(1, { message: "Subject is required" }),
   originalContent: z
