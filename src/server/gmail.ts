@@ -77,8 +77,6 @@ export async function fetchGmails() {
   }
 }
 
-
-
 export async function processFetchedGmails(
   emailData: EmailPayload[]
 ): Promise<ProcessedEmailPayload[]> {
@@ -101,6 +99,52 @@ export async function processFetchedGmails(
     return processedEmails;
   } catch (error) {
     console.error("Error processing fetched emails:", error);
+    throw error;
+  }
+}
+
+export async function sendEmail(to: string, subject: string, body: string) {
+  const { userId } = await auth();
+  if (!userId) {
+    throw new Error("User not authenticated");
+  }
+
+  const oAuthClient = await getOAuthClient(userId);
+  if (!oAuthClient) {
+    throw new Error("Failed to get OAuth client");
+  }
+
+  const gmail = google.gmail({ version: "v1", auth: oAuthClient });
+
+  const utf8Subject = `=?utf-8?B?${Buffer.from(subject).toString("base64")}?=`;
+  const messageParts = [
+    `To: ${to}`,
+    "Content-Type: text/plain; charset=utf-8",
+    "MIME-Version: 1.0",
+    `Subject: ${utf8Subject}`,
+    "",
+    body,
+  ];
+  const message = messageParts.join("\n");
+
+  const encodedMessage = Buffer.from(message)
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+
+  try {
+    const res = await gmail.users.messages.send({
+      userId: "me",
+      requestBody: {
+        raw: encodedMessage,
+      },
+    });
+
+    console.log("Email sent successfully:", res.data);
+    return res.data;
+  } catch (error) {
+    console.error("Error sending email:", error);
     throw error;
   }
 }
