@@ -8,7 +8,7 @@ export interface BusyEvent {
   summary: string;
 }
 
-interface Event {
+export interface Event {
   summary: string;
   description?: string;
   start: {
@@ -72,6 +72,7 @@ export async function fetchEvents(days = 10): Promise<BusyEvent[]> {
 }
 
 export async function scheduleEvent(event: Event): Promise<void> {
+  
   try {
     const { userId } = await auth();
     if (!userId) {
@@ -114,4 +115,20 @@ export async function getOAuthClient(clerkUserId: string) {
   client.setCredentials({ access_token: token.data.at(0)?.token });
 
   return client;
+}
+
+const test = {
+  "summary": "Urgent: Discussion on Upcoming Project Launch",
+  "description": "Let's meet & discuss the upcoming project launch.",
+  "start": {
+    "dateTime": "2025-01-25T21:00:00.000Z",
+    "timeZone": "America/New_York"
+  },
+  "end": {
+    "dateTime": "2025-01-25T22:00:00.000Z",
+    "timeZone": "America/New_York"
+  },
+  "attendees": [
+    { "email": "jane.smith@example.com" }
+  ]
 }
