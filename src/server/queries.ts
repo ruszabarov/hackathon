@@ -35,3 +35,10 @@ export async function fetchProcessAndStoreEmails() {
   }
   console.log("Successfully inserted emails into DB");
 }
+
+export async function updateEmailStatus(emailId: number, repliedStatus: string) {
+  await db
+    .update(emails)
+    .set({ replied: repliedStatus })
+    .where(eq(emails.emailId, emailId));
+}

@@ -27,6 +27,7 @@ export const emails = createTable(
     title: varchar("title", { length: 256 }),
     email_time: timestamp("email_time", { withTimezone: true }),
     originalContent: varchar("originalContent"),
+    replied: varchar("replied", { length: 3 }).default("No"),
   },
   (example) => ({
     priorityIndex: index("priority_idx").on(example.priority),

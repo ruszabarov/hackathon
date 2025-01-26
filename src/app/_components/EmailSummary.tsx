@@ -32,6 +32,7 @@ import {
 import type { z } from "zod";
 import { sendEmail } from "../../server/gmail"
 import { or } from "drizzle-orm";
+import { updateEmailStatus } from "~/server/queries";
 
 interface EmailSummaryProps {
   subject: string;
@@ -40,7 +41,7 @@ interface EmailSummaryProps {
   from: string;
   id: string;
   originalEmail: string;
-}
+  }
 
 const priorityColorMap = {
   [3]: "bg-secondary",
@@ -63,7 +64,7 @@ export function EmailSummary({
   from,
   id,
   originalEmail,
-}: EmailSummaryProps) {
+  }: EmailSummaryProps) {
   const router = useRouter();
   const [showOriginal, setShowOriginal] = useState(false);
 
@@ -76,6 +77,7 @@ export function EmailSummary({
   
       if (response) {
         console.log("Email sent successfully!");
+        await updateEmailStatus(Number(id), "Yes");
         router.back()
       } else {
         console.error("Failed to send email");
@@ -102,7 +104,7 @@ export function EmailSummary({
       <Card className="relative">
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger asChild>
+          <TooltipTrigger asChild>
               <div
                 className={cn(
                   "absolute right-3 top-3 h-6 w-6 rounded-full p-4",
@@ -110,7 +112,7 @@ export function EmailSummary({
                     "bg-red-600",
                 )}
               />
-            </TooltipTrigger>
+          </TooltipTrigger>
             <TooltipContent>
               <p>
                 {priorityLabels[priority as keyof typeof priorityLabels] ??
