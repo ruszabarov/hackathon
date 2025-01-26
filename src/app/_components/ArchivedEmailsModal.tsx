@@ -1,6 +1,12 @@
 "use client";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@components/ui/dialog";
 import { EmailSummaryCard } from "./EmailSummaryCard";
 import { useEffect, useState } from "react";
 import { fetchArchivedEmails } from "../../server/queries";
@@ -33,14 +39,14 @@ export function ArchivedEmailsModal() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">View Archived Emails</Button>
+        <Button variant="outline">Archived Emails</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[800px]">
         <DialogHeader>
           <DialogTitle>Archived Emails</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
-        {archivedEmails.map((email) => (
+        <div className="max-h-[500px] overflow-y-auto space-y-4">
+          {archivedEmails.map((email) => (
             <EmailSummaryCard
               key={email.emailId}
               subject={email.title || ""}
