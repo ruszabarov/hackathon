@@ -126,7 +126,7 @@ export default function ChatBox() {
               <FormItem className="flex-1">
                 <FormControl>
                   <Input
-                    placeholder="type to schedule an event..."
+                    placeholder="Type to schedule an event..."
                     {...field}
                     disabled={isSubmitting}
                   />
