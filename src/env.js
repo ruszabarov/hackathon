@@ -14,7 +14,7 @@ export const env = createEnv({
       .default("development"),
     OAUTH2_CLIENT_ID: z.string().min(1),
     OAUTH2_CLIENT_SECRET: z.string().min(1),
-    OAUTH2_REDIRECT_URL: z.string().min(1),
+    REDIRECT_URL: z.string().min(1),
   },
 
   /**
@@ -36,7 +36,7 @@ export const env = createEnv({
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     OAUTH2_CLIENT_ID: process.env.OAUTH2_CLIENT_ID,
     OAUTH2_CLIENT_SECRET: process.env.OAUTH2_CLIENT_SECRET,
-    OAUTH2_REDIRECT_URL: process.env.OAUTH2_REDIRECT_URL,
+    REDIRECT_URL: process.env.REDIRECT_URL,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
