@@ -26,6 +26,7 @@ import {
 import type { CalendarEventPayload } from "../../server/chat";
 import { scheduleEventAction, scheduleWithChatAction } from "~/server/actions";
 import { useState } from "react";
+import { useToast } from "~/hooks/use-toast";
 
 const formSchema = z.object({
   message: z.string().min(1, "Message is required"),
@@ -39,6 +40,7 @@ export default function ChatBox() {
   const [suggestedEvent, setSuggestedEvent] = useState<
     CalendarEventPayload | undefined
   >(undefined);
+  const { toast } = useToast();
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -104,12 +106,25 @@ export default function ChatBox() {
     try {
       const result = await scheduleEventAction(calendarEvent);
       if (result.success) {
+        toast({
+          title: "Event Scheduled",
+          description: `Successfully scheduled "${values.title}"`,
+        });
         setDialogOpen(false);
       } else {
-        console.error("Failed to schedule event:", result.error);
+        toast({
+          title: "Error",
+          description: result.error ?? "Failed to schedule event",
+          variant: "destructive",
+        });
       }
     } catch (error) {
       console.error("Error scheduling event:", error);
+      toast({
+        title: "Error",
+        description: "Failed to schedule event",
+        variant: "destructive",
+      });
     }
   };
 

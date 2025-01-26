@@ -43,7 +43,7 @@ import {
   scheduleEventAction,
 } from "../../server/actions";
 import type { CalendarEventPayload } from "../../server/chat";
-
+import { useToast } from "../../hooks/use-toast";
 interface EmailSummaryProps {
   subject: string;
   content: string;
@@ -80,6 +80,7 @@ export function EmailSummary({
   replied,
 }: EmailSummaryProps) {
   const router = useRouter();
+  const { toast } = useToast();
   const [showOriginal, setShowOriginal] = useState(false);
   const [isScheduling, setIsScheduling] = useState(false);
   const [suggestedEvent, setSuggestedEvent] = useState<
@@ -96,13 +97,26 @@ export function EmailSummary({
       const response = await sendEmail(to, subject, originalContent);
 
       if (response) {
-        console.log("Email sent successfully!");
+        toast({
+          title: "Success",
+          description: "Email sent successfully!",
+        });
         await updateEmailStatus(Number(id), "Yes");
         router.back();
       } else {
+        toast({
+          title: "Error",
+          description: "Failed to send email",
+          variant: "destructive",
+        });
         console.error("Failed to send email");
       }
     } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send email",
+        variant: "destructive",
+      });
       console.error("Error in handleReplySubmit:", error);
     }
   };
@@ -172,6 +186,10 @@ export function EmailSummary({
     try {
       const result = await scheduleEventAction(calendarEvent);
       if (result.success) {
+        toast({
+          title: "Success",
+          description: "Event scheduled successfully!",
+        });
         setDialogOpen(false);
         router.refresh();
       } else {
