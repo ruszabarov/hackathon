@@ -35,3 +35,19 @@ export async function fetchProcessAndStoreEmails() {
   }
   console.log("Successfully inserted emails into DB");
 }
+
+export async function archiveEmail(id) {
+  try {
+    // Perform the deletion
+    await db
+      .delete(emails)
+      .where(eq(emails.emailId, id));
+
+    console.log(`Email with ID ${id} archived successfully.`);
+  } catch (error) {
+    console.error(`Failed to archive email with ID ${id}:`, error);
+    throw new Error("Error archiving email");
+  }
+}
+
+
